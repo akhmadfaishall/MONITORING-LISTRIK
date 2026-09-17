@@ -3395,6 +3395,285 @@
             }
         }
 
+
+        /* =====================================================
+           MOBILE HEADER V2
+           Lebih besar, lebih rapi, tetap aman di layar HP
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .header {
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 13px 16px 14px !important;
+                gap: 12px !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+
+            .brand {
+                width: 100% !important;
+                min-width: 0 !important;
+                gap: 11px !important;
+                align-items: center !important;
+                overflow: hidden !important;
+            }
+
+            .logo {
+                width: 46px !important;
+                height: 46px !important;
+                flex: 0 0 46px !important;
+                border-radius: 10px !important;
+            }
+
+            .brand > div:last-child {
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+                overflow: hidden !important;
+            }
+
+            .brand h1 {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                font-size: 17px !important;
+                line-height: 1.18 !important;
+                letter-spacing: -.25px !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+            }
+
+            .brand p {
+                width: 100% !important;
+                margin-top: 4px !important;
+                font-size: 10px !important;
+                line-height: 1.3 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            /* STATUS ONLINE */
+            .connection {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                display: grid !important;
+                grid-template-columns: 11px minmax(0, 1fr) !important;
+                grid-template-rows: auto auto !important;
+                align-items: center !important;
+                column-gap: 10px !important;
+                row-gap: 7px !important;
+                padding: 11px 14px !important;
+                border-radius: 14px !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+
+            .connection .dot {
+                grid-column: 1 !important;
+                grid-row: 1 !important;
+                width: 10px !important;
+                height: 10px !important;
+                margin: 0 !important;
+                justify-self: center !important;
+            }
+
+            .connection #connectionStatus {
+                grid-column: 2 !important;
+                grid-row: 1 !important;
+                min-width: 0 !important;
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+                font-weight: 700 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .connection .connection-divider {
+                display: none !important;
+            }
+
+            .connection .live-clock {
+                grid-column: 1 / -1 !important;
+                grid-row: 2 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                font-size: 13px !important;
+                line-height: 1.35 !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                white-space: normal !important;
+                overflow: hidden !important;
+                font-variant-numeric: tabular-nums !important;
+            }
+
+            .connection .live-clock-icon {
+                font-size: 13px !important;
+                flex: 0 0 auto !important;
+            }
+
+            .connection .live-clock #liveClock {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                word-break: normal !important;
+                text-overflow: clip !important;
+            }
+
+            .connection .clock-zone {
+                flex: 0 0 auto !important;
+                font-size: 11px !important;
+                line-height: 1.1 !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 12px 14px 13px !important;
+                gap: 11px !important;
+            }
+
+            .logo {
+                width: 44px !important;
+                height: 44px !important;
+                flex-basis: 44px !important;
+            }
+
+            .brand {
+                gap: 10px !important;
+            }
+
+            .brand h1 {
+                font-size: 16px !important;
+                line-height: 1.2 !important;
+            }
+
+            .brand p {
+                font-size: 9px !important;
+                margin-top: 3px !important;
+            }
+
+            .connection {
+                padding: 10px 12px !important;
+                column-gap: 9px !important;
+                row-gap: 6px !important;
+                border-radius: 13px !important;
+            }
+
+            .connection .dot {
+                width: 9px !important;
+                height: 9px !important;
+            }
+
+            .connection #connectionStatus {
+                font-size: 13px !important;
+            }
+
+            .connection .live-clock {
+                font-size: 12px !important;
+                gap: 5px !important;
+                line-height: 1.35 !important;
+            }
+
+            .connection .clock-zone {
+                font-size: 10px !important;
+            }
+        }
+
+        @media (max-width: 430px) {
+
+            .header {
+                padding: 11px 12px 12px !important;
+                gap: 10px !important;
+            }
+
+            .logo {
+                width: 42px !important;
+                height: 42px !important;
+                flex-basis: 42px !important;
+                border-radius: 9px !important;
+            }
+
+            .brand {
+                gap: 9px !important;
+            }
+
+            .brand h1 {
+                font-size: 15px !important;
+            }
+
+            .brand p {
+                font-size: 8.5px !important;
+            }
+
+            .connection {
+                padding: 10px 11px !important;
+                column-gap: 8px !important;
+                row-gap: 5px !important;
+                border-radius: 12px !important;
+            }
+
+            .connection #connectionStatus {
+                font-size: 12.5px !important;
+            }
+
+            .connection .live-clock {
+                font-size: 11.5px !important;
+                gap: 5px !important;
+            }
+
+            .connection .clock-zone {
+                font-size: 9.5px !important;
+            }
+        }
+
+        @media (max-width: 360px) {
+
+            .header {
+                padding: 10px 10px 11px !important;
+            }
+
+            .logo {
+                width: 39px !important;
+                height: 39px !important;
+                flex-basis: 39px !important;
+            }
+
+            .brand h1 {
+                font-size: 14px !important;
+            }
+
+            .brand p {
+                font-size: 8px !important;
+            }
+
+            .connection {
+                padding: 9px 10px !important;
+            }
+
+            .connection #connectionStatus {
+                font-size: 11.5px !important;
+            }
+
+            .connection .live-clock {
+                font-size: 10.5px !important;
+            }
+
+            .connection .clock-zone {
+                font-size: 9px !important;
+            }
+        }
+
 </style>
 
 
