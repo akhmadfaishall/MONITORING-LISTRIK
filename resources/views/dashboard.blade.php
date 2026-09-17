@@ -2974,6 +2974,427 @@
             }
         }
 
+
+        /* =====================================================
+           FINAL MOBILE HEADER + SYSTEM INFO FIX
+           Hanya merapikan tampilan HP.
+           Desktop/tablet dan fungsi lainnya tidak diubah.
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            /* ---------- HEADER ---------- */
+
+            .header {
+                width: 100% !important;
+                min-width: 0 !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                justify-content: center !important;
+                gap: 9px !important;
+                padding: 10px 12px !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+
+            .brand {
+                width: 100% !important;
+                min-width: 0 !important;
+                flex: none !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 9px !important;
+                overflow: hidden !important;
+            }
+
+            .logo {
+                width: 39px !important;
+                height: 39px !important;
+                flex: 0 0 39px !important;
+                padding: 4px !important;
+                border-radius: 9px !important;
+            }
+
+            .brand > div:last-child {
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+                overflow: hidden !important;
+            }
+
+            .brand h1 {
+                width: 100% !important;
+                min-width: 0 !important;
+                font-size: 13.5px !important;
+                line-height: 1.2 !important;
+                letter-spacing: -.2px !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+            }
+
+            .brand p {
+                max-width: 100% !important;
+                font-size: 8px !important;
+                line-height: 1.3 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            /* Kotak status dibuat 2 baris:
+               status di atas, tanggal/jam di bawah. */
+            .connection {
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                display: grid !important;
+                grid-template-columns: 8px minmax(0, 1fr) !important;
+                grid-template-rows: auto auto !important;
+                align-items: center !important;
+                column-gap: 7px !important;
+                row-gap: 4px !important;
+                padding: 7px 10px !important;
+                border-radius: 9px !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+
+            .connection .dot {
+                grid-column: 1 !important;
+                grid-row: 1 !important;
+                width: 7px !important;
+                height: 7px !important;
+                margin: 0 !important;
+                justify-self: center !important;
+            }
+
+            .connection #connectionStatus {
+                grid-column: 2 !important;
+                grid-row: 1 !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                font-size: 9.5px !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .connection .connection-divider {
+                display: none !important;
+            }
+
+            .connection .live-clock {
+                grid-column: 1 / -1 !important;
+                grid-row: 2 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 4px !important;
+                font-size: 9px !important;
+                line-height: 1.3 !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+                white-space: normal !important;
+                overflow: hidden !important;
+                overflow-wrap: anywhere !important;
+                word-break: normal !important;
+                font-variant-numeric: tabular-nums !important;
+            }
+
+            .connection .live-clock #liveClock {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                overflow: hidden !important;
+                text-overflow: clip !important;
+            }
+
+            .connection .clock-zone {
+                flex: 0 0 auto !important;
+                font-size: 8px !important;
+                line-height: 1 !important;
+                white-space: nowrap !important;
+            }
+
+            /* ---------- INFORMASI SISTEM ---------- */
+
+            .system-panel {
+                width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+                padding: 14px !important;
+            }
+
+            .system-panel > .panel-title {
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+            }
+
+            .system-panel > .panel-subtitle {
+                font-size: 9px !important;
+                line-height: 1.4 !important;
+                margin-top: 2px !important;
+            }
+
+            .status-box {
+                width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 9px !important;
+                padding: 10px !important;
+                margin-top: 12px !important;
+                border-radius: 10px !important;
+                overflow: hidden !important;
+            }
+
+            .status-icon {
+                width: 30px !important;
+                height: 30px !important;
+                flex: 0 0 30px !important;
+                border-radius: 8px !important;
+                font-size: 13px !important;
+            }
+
+            .status-box > div:last-child {
+                min-width: 0 !important;
+                flex: 1 1 auto !important;
+                overflow: hidden !important;
+            }
+
+            .status-title {
+                font-size: 10px !important;
+                line-height: 1.25 !important;
+                white-space: normal !important;
+            }
+
+            .status-text {
+                font-size: 8px !important;
+                line-height: 1.35 !important;
+                white-space: normal !important;
+            }
+
+            .info-grid {
+                width: 100% !important;
+                min-width: 0 !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 7px !important;
+                margin-top: 10px !important;
+            }
+
+            .info-item {
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 9px !important;
+                border-radius: 8px !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+
+            .info-label {
+                min-width: 0 !important;
+                font-size: 8px !important;
+                line-height: 1.3 !important;
+                white-space: normal !important;
+            }
+
+            .info-value {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-top: 4px !important;
+                font-size: 10px !important;
+                line-height: 1.35 !important;
+                font-weight: 600 !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                font-variant-numeric: tabular-nums !important;
+            }
+
+            /* Pembacaan terakhir dibuat sedikit lebih kecil
+               supaya tanggal + jam tetap terlihat rapi. */
+            .info-item:nth-child(3) .info-value {
+                font-size: 8.8px !important;
+                line-height: 1.35 !important;
+                letter-spacing: -.1px !important;
+            }
+
+            .info-item:nth-child(4) .info-value {
+                min-height: 27px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            #loadStatus {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 3px 7px !important;
+                font-size: 8px !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+
+            .token-box {
+                width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                padding: 11px !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            .token-label {
+                font-size: 8px !important;
+                line-height: 1.3 !important;
+            }
+
+            .token-value {
+                font-size: 16px !important;
+                line-height: 1.25 !important;
+            }
+
+            .token-note {
+                font-size: 8px !important;
+                line-height: 1.4 !important;
+            }
+        }
+
+        @media (max-width: 430px) {
+
+            .header {
+                padding: 9px 10px !important;
+                gap: 8px !important;
+            }
+
+            .logo {
+                width: 37px !important;
+                height: 37px !important;
+                flex-basis: 37px !important;
+            }
+
+            .brand {
+                gap: 8px !important;
+            }
+
+            .brand h1 {
+                font-size: 13px !important;
+            }
+
+            .brand p {
+                font-size: 7.5px !important;
+            }
+
+            .connection {
+                padding: 6px 8px !important;
+                column-gap: 6px !important;
+                row-gap: 3px !important;
+            }
+
+            .connection #connectionStatus {
+                font-size: 9px !important;
+            }
+
+            .connection .live-clock {
+                font-size: 8.5px !important;
+                line-height: 1.25 !important;
+            }
+
+            .connection .clock-zone {
+                font-size: 7.5px !important;
+            }
+
+            .system-panel {
+                padding: 12px !important;
+            }
+
+            .info-grid {
+                gap: 6px !important;
+            }
+
+            .info-item {
+                padding: 8px !important;
+            }
+
+            .info-label {
+                font-size: 7.5px !important;
+            }
+
+            .info-value {
+                font-size: 9.5px !important;
+            }
+
+            .info-item:nth-child(3) .info-value {
+                font-size: 8.3px !important;
+            }
+
+            #loadStatus {
+                font-size: 7.8px !important;
+                padding: 3px 6px !important;
+            }
+        }
+
+        @media (max-width: 360px) {
+
+            .header {
+                padding: 8px 9px !important;
+            }
+
+            .logo {
+                width: 35px !important;
+                height: 35px !important;
+                flex-basis: 35px !important;
+            }
+
+            .brand h1 {
+                font-size: 12px !important;
+            }
+
+            .connection {
+                padding: 6px 7px !important;
+            }
+
+            .connection #connectionStatus {
+                font-size: 8.5px !important;
+            }
+
+            .connection .live-clock {
+                font-size: 8px !important;
+            }
+
+            .connection .clock-zone {
+                font-size: 7px !important;
+            }
+
+            .system-panel {
+                padding: 11px !important;
+            }
+
+            .info-grid {
+                gap: 5px !important;
+            }
+
+            .info-item {
+                padding: 7px !important;
+            }
+
+            .info-label {
+                font-size: 7px !important;
+            }
+
+            .info-value {
+                font-size: 9px !important;
+            }
+
+            .info-item:nth-child(3) .info-value {
+                font-size: 8px !important;
+            }
+        }
+
 </style>
 
 
