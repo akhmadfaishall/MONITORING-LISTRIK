@@ -1,1281 +1,2981 @@
 <!DOCTYPE html>
+
 <html lang="id">
+
 
 <head>
 
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
     <title>Monitoring Listrik Rumah F3</title>
 
+
     <!-- FONT -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+
     <link
+
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+
         rel="stylesheet"
+
     >
 
+
     <!-- CHART -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <style>
 
+
         /* =====================================================
+
            ROOT
+
         ===================================================== */
+
 
         :root {
 
+
             --bg: #070b12;
+
             --bg-soft: #0b111b;
 
+
             --panel: #0f1723;
+
             --panel-2: #111c2a;
 
+
             --border: #1d2a3a;
+
             --border-light: #263548;
 
+
             --text: #f1f5f9;
+
             --text-soft: #c5d0dc;
+
             --muted: #748398;
 
+
             --blue: #2f81f7;
+
             --blue-soft: rgba(47,129,247,.12);
 
+
             --cyan: #22d3ee;
+
             --cyan-soft: rgba(34,211,238,.10);
 
+
             --green: #22c55e;
+
             --green-soft: rgba(34,197,94,.10);
 
+
             --orange: #f59e0b;
+
             --orange-soft: rgba(245,158,11,.10);
 
+
             --red: #ef4444;
+
             --red-soft: rgba(239,68,68,.10);
 
+
             --purple: #a855f7;
+
             --purple-soft: rgba(168,85,247,.10);
 
+
             --shadow:
+
                 0 8px 30px rgba(0,0,0,.22);
+
         }
 
 
         /* =====================================================
-           RESET
+           POWERFUL COLOR THEME
         ===================================================== */
 
+        body::before {
+            content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+            background: radial-gradient(circle at 8% 18%, rgba(59,130,246,.13), transparent 24%),
+                        radial-gradient(circle at 92% 18%, rgba(168,85,247,.11), transparent 24%),
+                        radial-gradient(circle at 50% 100%, rgba(34,211,238,.08), transparent 30%);
+        }
+
+        .header { background: linear-gradient(90deg, rgba(8,14,24,.98), rgba(12,20,34,.96), rgba(10,15,27,.98)); border-bottom-color: rgba(59,130,246,.30); box-shadow: 0 8px 30px rgba(0,0,0,.30), 0 1px 0 rgba(34,211,238,.08); }
+        .brand h1 { background: linear-gradient(90deg,#fff,#93c5fd,#67e8f9); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .welcome h2 { background: linear-gradient(90deg,#f8fafc,#60a5fa,#22d3ee); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+        .card { background: linear-gradient(145deg,rgba(18,31,49,.99),rgba(8,16,28,.99)); border-color: rgba(71,95,125,.48); box-shadow: 0 12px 34px rgba(0,0,0,.27), inset 0 1px 0 rgba(255,255,255,.025); }
+        .card::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,var(--card-accent),transparent 86%); box-shadow:0 0 16px var(--card-accent); }
+        .cards .card:nth-child(1){--card-accent:#22d3ee}.cards .card:nth-child(2){--card-accent:#f59e0b}.cards .card:nth-child(3){--card-accent:#3b82f6}.cards .card:nth-child(4){--card-accent:#a855f7}
+        .cards .card:nth-child(1) .metric-icon{color:#22d3ee;background:rgba(34,211,238,.10);border-color:rgba(34,211,238,.24)}
+        .cards .card:nth-child(2) .metric-icon{color:#f59e0b;background:rgba(245,158,11,.10);border-color:rgba(245,158,11,.24)}
+        .cards .card:nth-child(3) .metric-icon{color:#3b82f6;background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.24)}
+        .cards .card:nth-child(4) .metric-icon{color:#a855f7;background:rgba(168,85,247,.10);border-color:rgba(168,85,247,.24)}
+
+        .history-toolbar { background:linear-gradient(100deg,rgba(16,31,52,.99),rgba(15,24,41,.98),rgba(27,19,49,.97)); border-color:rgba(96,165,250,.30); box-shadow:0 12px 34px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.025); }
+        .history-toolbar::before { content:""; width:4px; align-self:stretch; border-radius:10px; background:linear-gradient(180deg,#22d3ee,#3b82f6,#a855f7); box-shadow:0 0 18px rgba(59,130,246,.50); }
+        .history-btn { background:rgba(7,14,25,.82); border-color:rgba(96,165,250,.30); }
+        .window-label { background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(168,85,247,.16)); border-color:rgba(96,165,250,.34); color:#bfdbfe; box-shadow:0 0 18px rgba(59,130,246,.10); }
+
+        .charts-grid .chart-panel { position:relative; overflow:hidden; background:linear-gradient(145deg,rgba(16,27,44,.99),rgba(8,16,27,.99)); border-color:rgba(71,95,125,.46); box-shadow:0 12px 34px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.025); }
+        .charts-grid .chart-panel::before { content:""; position:absolute; left:0; top:0; width:100%; height:2px; background:linear-gradient(90deg,var(--chart-accent),transparent 78%); box-shadow:0 0 18px var(--chart-accent); }
+        .charts-grid .chart-panel:nth-child(2){--chart-accent:#3b82f6}.charts-grid .chart-panel:nth-child(3){--chart-accent:#22d3ee}.charts-grid .chart-panel:nth-child(4){--chart-accent:#f59e0b}.charts-grid .chart-panel:nth-child(5){--chart-accent:#a855f7}
+        .charts-grid .chart-panel .panel-title::before { content:""; display:inline-block; width:7px; height:7px; margin-right:8px; vertical-align:1px; border-radius:50%; background:var(--chart-accent); box-shadow:0 0 10px var(--chart-accent); }
+        .system-panel { background:linear-gradient(145deg,rgba(15,29,45,.99),rgba(10,18,30,.99)); border-color:rgba(34,211,238,.22); }
+
+        /* =====================================================
+
+           RESET
+
+        ===================================================== */
+
+
         * {
+
             box-sizing: border-box;
+
             margin: 0;
+
             padding: 0;
+
         }
 
 
         html {
+
             background: var(--bg);
+
         }
 
 
         body {
 
+
             min-height: 100vh;
 
+
             font-family:
+
                 "Inter",
+
                 Arial,
+
                 sans-serif;
 
+
             background:
+
                 radial-gradient(
+
                     circle at 20% 0%,
+
                     rgba(47,129,247,.07),
+
                     transparent 28%
+
                 ),
+
                 var(--bg);
+
 
             color: var(--text);
 
+
             line-height: 1.5;
+
         }
 
 
         /* =====================================================
+
            HEADER
+
         ===================================================== */
+
 
         .header {
 
+
             width: 100%;
+
 
             min-height: 76px;
 
+
             padding:
+
                 13px
+
                 clamp(16px, 3vw, 40px);
 
+
             background:
+
                 rgba(9,14,22,.92);
 
+
             border-bottom:
+
                 1px solid var(--border);
+
 
             display: flex;
 
+
             align-items: center;
+
 
             justify-content: space-between;
 
+
             gap: 20px;
+
 
             position: sticky;
 
+
             top: 0;
+
 
             z-index: 50;
 
+
             backdrop-filter: blur(12px);
+
         }
 
 
         .brand {
 
+
             display: flex;
+
 
             align-items: center;
 
+
             gap: 13px;
 
+
             min-width: 0;
+
         }
 
 
         .logo {
+
     width: 46px;
+
     height: 46px;
+
     flex-shrink: 0;
 
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
+
     background: #ffffff;
+
     border-radius: 10px;
+
 
     padding: 5px;
 
+
     overflow: hidden;
+
 }
 
+
 .logo img {
+
     width: 100%;
+
     height: 100%;
+
     object-fit: contain;
+
 }
 
 
         .brand h1 {
 
+
             font-size:
+
                 clamp(15px, 2vw, 19px);
+
 
             font-weight: 700;
 
+
             letter-spacing: -.35px;
 
+
             white-space: nowrap;
+
         }
 
 
         .brand p {
 
+
             margin-top: 2px;
+
 
             color: var(--muted);
 
+
             font-size: 10px;
 
+
             font-weight: 500;
+
         }
 
 
         /* ONLINE */
 
+
         .connection {
+
             .connection-divider {
+
     width: 1px;
+
     height: 18px;
+
     background: #334155;
+
     margin: 0 4px;
+
 }
+
 
 .live-clock {
+
     display: inline-flex;
+
     align-items: center;
+
     gap: 6px;
+
     font-size: 13px;
+
     font-weight: 600;
+
     color: #e2e8f0;
+
     font-variant-numeric: tabular-nums;
+
     white-space: nowrap;
+
 }
+
 
 .live-clock-icon {
+
     font-size: 13px;
+
     line-height: 1;
+
 }
 
+
 .clock-zone {
+
     color: #60a5fa;
+
     font-size: 11px;
+
     font-weight: 700;
+
     letter-spacing: .5px;
+
 }
+
 
             display: flex;
 
+
             align-items: center;
+
 
             gap: 8px;
 
+
             padding: 7px 12px;
+
 
             border-radius: 999px;
 
+
             background:
+
                 var(--green-soft);
 
+
             border:
+
                 1px solid rgba(34,197,94,.22);
+
 
             color: #6ee7a0;
 
+
             font-size: 10px;
+
 
             font-weight: 600;
 
+
             white-space: nowrap;
+
         }
 
 
         .dot {
 
+
             width: 7px;
+
             height: 7px;
+
 
             border-radius: 50%;
 
+
             background: var(--green);
 
+
             box-shadow:
+
                 0 0 0 4px
+
                 rgba(34,197,94,.08);
 
+
             animation:
+
                 onlinePulse 2s infinite;
+
         }
 
 
         @keyframes onlinePulse {
 
+
             0%,100% {
+
                 opacity: 1;
+
             }
 
+
             50% {
+
                 opacity: .45;
+
             }
+
 
         }
 
 
         /* =====================================================
+
            MAIN
+
         ===================================================== */
+
 
         .container {
 
+
             width:
+
                 calc(100% - 40px);
+
 
             max-width: 1700px;
 
+
             margin:
+
                 0 auto;
 
+
             padding:
+
                 30px 0 35px;
+
         }
 
 
         .welcome {
 
+
             margin-bottom: 22px;
+
         }
 
 
         .welcome h2 {
 
+
             font-size:
+
                 clamp(21px, 2.5vw, 28px);
+
 
             font-weight: 700;
 
+
             letter-spacing: -.7px;
+
         }
 
 
         .welcome p {
 
+
             margin-top: 4px;
+
 
             color: var(--muted);
 
+
             font-size: 12px;
+
         }
 
 
         /* =====================================================
+
            SENSOR CARDS
+
         ===================================================== */
+
 
         .cards {
 
+
             display: grid;
 
+
             grid-template-columns:
-                repeat(6, minmax(0,1fr));
+
+                repeat(4, minmax(0,1fr));
+
 
             gap: 14px;
 
+
             margin-bottom: 18px;
+
         }
 
 
         .card {
 
+
             position: relative;
+
 
             min-width: 0;
 
+
             background:
+
                 linear-gradient(
+
                     145deg,
+
                     rgba(17,28,42,.98),
+
                     rgba(12,19,29,.98)
+
                 );
 
+
             border:
+
                 1px solid var(--border);
+
 
             border-radius: 14px;
 
+
             padding: 17px;
 
+
             box-shadow:
+
                 var(--shadow);
+
 
             overflow: hidden;
 
+
             transition:
+
                 transform .2s ease,
+
                 border-color .2s ease,
+
                 box-shadow .2s ease;
+
         }
 
 
         .card:hover {
 
+
             transform:
+
                 translateY(-2px);
 
+
             border-color:
+
                 var(--border-light);
 
+
             box-shadow:
+
                 0 12px 35px rgba(0,0,0,.30);
+
         }
 
 
         .card::after {
 
+
             content: "";
+
 
             position: absolute;
 
+
             left: 0;
+
             right: 0;
+
 
             top: 0;
 
+
             height: 2px;
 
+
             background:
+
                 var(--accent);
+
         }
 
 
         .card-head {
 
+
             display: flex;
+
 
             align-items: center;
 
+
             justify-content: space-between;
+
 
             gap: 10px;
 
+
             margin-bottom: 14px;
+
         }
 
 
         .card-title {
 
+
             color: var(--muted);
+
 
             font-size: 10px;
 
+
             font-weight: 600;
+
 
             text-transform: uppercase;
 
+
             letter-spacing: .25px;
+
         }
 
 
         .metric-icon {
 
+
             width: 34px;
+
             height: 34px;
+
 
             flex-shrink: 0;
 
+
             display: flex;
+
 
             align-items: center;
 
+
             justify-content: center;
+
 
             border-radius: 9px;
 
+
             background:
+
                 var(--icon-bg);
 
+
             color:
+
                 var(--accent);
+
         }
 
 
         .metric-icon svg {
 
+
             width: 17px;
+
             height: 17px;
 
+
             stroke:
+
                 currentColor;
+
         }
 
 
         .metric-value {
 
+
             display: flex;
+
 
             align-items: baseline;
 
+
             gap: 5px;
 
+
             min-width: 0;
+
         }
 
 
         .value {
 
+
             font-size:
+
                 clamp(23px, 2.3vw, 30px);
+
 
             line-height: 1;
 
+
             font-weight: 700;
+
 
             letter-spacing: -1px;
 
+
             color:
+
                 var(--text);
 
+
             font-variant-numeric:
+
                 tabular-nums;
 
+
             overflow:
+
                 hidden;
 
+
             text-overflow:
+
                 ellipsis;
+
         }
 
 
         .unit {
 
+
             color:
+
                 var(--muted);
+
 
             font-size: 10px;
 
+
             font-weight: 600;
+
         }
 
 
         /* CARD ACCENTS */
 
+
         .voltage-card {
+
 
             --accent: #3b82f6;
 
+
             --icon-bg:
+
                 rgba(59,130,246,.12);
+
         }
 
 
         .current-card {
 
+
             --accent: #f59e0b;
 
+
             --icon-bg:
+
                 rgba(245,158,11,.12);
+
         }
 
 
         .power-card {
 
+
             --accent: #ef4444;
 
+
             --icon-bg:
+
                 rgba(239,68,68,.12);
+
         }
 
 
-        .energy-card {
-
-            --accent: #22c55e;
-
-            --icon-bg:
-                rgba(34,197,94,.12);
-        }
+        
 
 
         .frequency-card {
 
+
             --accent: #a855f7;
 
+
             --icon-bg:
+
                 rgba(168,85,247,.12);
+
         }
 
 
-        .pf-card {
-
-            --accent: #22d3ee;
-
-            --icon-bg:
-                rgba(34,211,238,.12);
-        }
+        
 
 
         /* =====================================================
+
            MAIN GRID
+
         ===================================================== */
+
 
         .main-grid {
 
+
             display: grid;
 
+
             grid-template-columns:
+
                 minmax(0, 1.8fr)
+
                 minmax(340px, .8fr);
+
 
             gap: 18px;
 
+
             align-items: stretch;
+
         }
 
 
         .charts-grid {
+
             display: grid;
+
             grid-template-columns: repeat(2, minmax(0, 1fr));
+
             gap: 18px;
+
         }
+
+        .history-toolbar {
+            grid-column: 1 / -1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 15px 17px;
+            background: linear-gradient(145deg, rgba(17,28,42,.98), rgba(12,19,29,.98));
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .history-info {
+            min-width: 0;
+        }
+
+        .history-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .date-navigation,
+        .period-navigation {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .date-history-label {
+            min-width: 142px;
+            height: 36px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: #0b121c;
+            color: var(--text-soft);
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .window-label.live {
+            color: #4ade80 !important;
+            border-color: rgba(34,197,94,.45) !important;
+            background: rgba(34,197,94,.07) !important;
+            box-shadow: 0 0 12px rgba(34,197,94,.08) !important;
+        }
+
+        .history-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: #0b121c;
+            color: var(--text-soft);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .history-btn:hover:not(:disabled) {
+            border-color: var(--blue);
+            color: #fff;
+            background: var(--blue-soft);
+        }
+
+        .history-btn:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .window-label {
+            min-width: 112px;
+            height: 36px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: rgba(47,129,247,.08);
+            color: #93c5fd;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
         .chart-panel { min-width: 0; }
+
         .system-panel { grid-column: 1 / -1; }
+
         .charts-grid .chart-wrapper { height: 310px; }
+
         .connection.offline { background: var(--red-soft); border-color: rgba(239,68,68,.22); color: #fca5a5; }
+
         .dot.offline { background: var(--red); box-shadow: 0 0 0 4px rgba(239,68,68,.08); animation: offlinePulse 2s infinite; }
+
         @keyframes offlinePulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+
 
         .panel {
 
+
             min-width: 0;
 
+
             background:
+
                 linear-gradient(
+
                     145deg,
+
                     rgba(15,23,35,.98),
+
                     rgba(10,17,27,.98)
+
                 );
 
+
             border:
+
                 1px solid var(--border);
+
 
             border-radius: 16px;
 
+
             padding: 21px;
 
+
             box-shadow:
+
                 var(--shadow);
+
         }
 
 
         .panel-header {
 
+
             display: flex;
+
 
             justify-content: space-between;
 
+
             align-items: flex-start;
+
 
             gap: 15px;
 
+
             margin-bottom: 20px;
+
         }
 
 
         .panel-title {
 
+
             color: var(--text);
+
 
             font-size: 14px;
 
+
             font-weight: 700;
+
         }
 
 
         .panel-subtitle {
 
+
             margin-top: 3px;
+
 
             color: var(--muted);
 
+
             font-size: 10px;
+
         }
 
 
         /* =====================================================
+
            DATE
+
         ===================================================== */
+
 
         .date-box {
 
+
             height: 36px;
 
+
             padding:
+
                 0 10px;
 
+
             border:
+
                 1px solid var(--border-light);
+
 
             border-radius: 8px;
 
+
             background:
+
                 #0b121c;
 
+
             color:
+
                 var(--text-soft);
 
+
             font-family:
+
                 "Inter",
+
                 sans-serif;
+
 
             font-size: 10px;
 
+
             outline: none;
+
 
             color-scheme: dark;
 
+
             cursor: pointer;
+
         }
 
 
         .date-box:focus {
 
+
             border-color:
+
                 var(--blue);
 
+
             box-shadow:
+
                 0 0 0 3px
+
                 rgba(47,129,247,.10);
+
         }
 
 
         /* =====================================================
+
            CHART
+
         ===================================================== */
+
 
         .chart-wrapper {
 
+
             width: 100%;
+
 
             height: 350px;
 
+
             position: relative;
+
         }
 
 
         /* =====================================================
+
            STATUS
+
         ===================================================== */
+
 
         .status-box {
 
+
             display: flex;
+
 
             align-items: center;
 
+
             gap: 12px;
+
 
             padding: 13px;
 
+
             margin-top: 18px;
+
 
             border-radius: 12px;
 
+
             background:
+
                 var(--green-soft);
 
+
             border:
+
                 1px solid
+
                 rgba(34,197,94,.20);
+
         }
 
 
         .status-icon {
 
+
             width: 35px;
+
             height: 35px;
+
 
             flex-shrink: 0;
 
+
             border-radius: 9px;
+
 
             display: flex;
 
+
             align-items: center;
+
 
             justify-content: center;
 
+
             background:
+
                 #16a34a;
+
 
             color: white;
 
+
             font-size: 15px;
 
+
             font-weight: 700;
+
         }
 
 
         .status-title {
 
+
             color:
+
                 #86efac;
+
 
             font-size: 11px;
 
+
             font-weight: 700;
+
         }
 
 
         .status-text {
 
+
             color:
+
                 #729080;
+
 
             margin-top: 2px;
 
+
             font-size: 9px;
+
         }
 
 
         /* =====================================================
+
            INFO
+
         ===================================================== */
+
 
         .info-grid {
 
+
             display: grid;
 
+
             grid-template-columns:
+
                 repeat(2,minmax(0,1fr));
+
 
             gap: 10px;
 
+
             margin-top: 14px;
+
         }
 
 
         .info-item {
 
+
             min-width: 0;
+
 
             padding: 12px;
 
+
             border:
+
                 1px solid var(--border);
+
 
             border-radius: 10px;
 
+
             background:
+
                 rgba(7,12,19,.55);
+
         }
 
 
         .info-label {
 
+
             color:
+
                 var(--muted);
+
 
             font-size: 9px;
 
+
             font-weight: 500;
+
         }
 
 
         .info-value {
 
+
             margin-top: 5px;
 
+
             color:
+
                 var(--text-soft);
+
 
             font-size: 11px;
 
+
             font-weight: 600;
 
+
             overflow-wrap:
+
                 anywhere;
 
+
             font-variant-numeric:
+
                 tabular-nums;
+
         }
 
 
         /* =====================================================
+
            LOAD STATUS
+
         ===================================================== */
+
 
         #loadStatus {
 
+
             display: inline-flex;
+
 
             align-items: center;
 
+
             padding:
+
                 3px 8px;
 
+
             border-radius:
+
                 999px;
 
+
             background:
+
                 var(--green-soft);
 
+
             color:
+
                 #6ee7a0;
 
+
             font-size:
+
                 9px;
 
+
             font-weight:
+
                 600;
+
         }
 
 
         /* =====================================================
+
            TOKEN
+
         ===================================================== */
+
 
         .token-box {
 
+
             margin-top: 13px;
+
 
             padding: 15px;
 
+
             border-radius: 12px;
 
+
             background:
+
                 linear-gradient(
+
                     145deg,
+
                     rgba(20,32,47,.65),
+
                     rgba(9,15,23,.8)
+
                 );
 
+
             border:
+
                 1px dashed
+
                 #2b3b4e;
+
         }
 
 
         .token-label {
 
+
             color:
+
                 var(--muted);
+
 
             font-size: 9px;
 
+
             font-weight: 700;
 
+
             letter-spacing:
+
                 .3px;
+
         }
 
 
         .token-value {
 
+
             margin-top: 6px;
 
+
             color:
+
                 var(--text);
+
 
             font-size: 18px;
 
+
             font-weight: 700;
+
         }
 
 
         .token-note {
 
+
             margin-top: 4px;
 
+
             color:
+
                 var(--muted);
+
 
             font-size: 9px;
 
+
             line-height: 1.5;
+
         }
 
 
         /* =====================================================
+
            FOOTER
+
         ===================================================== */
+
 
         .footer {
 
+
             border-top:
+
                 1px solid var(--border);
 
+
             padding:
+
                 20px;
+
 
             text-align: center;
 
+
             color:
+
                 #536276;
 
+
             font-size: 12px;
+
         }
 
 
         /* =====================================================
+
            TABLET / LAPTOP
+
         ===================================================== */
+
 
         @media (max-width: 1250px) {
 
+
             .cards {
 
+
                 grid-template-columns:
-                    repeat(3,minmax(0,1fr));
+
+                    repeat(2,minmax(0,1fr));
+
             }
 
 
             .main-grid {
 
+
                 grid-template-columns:
+
                     minmax(0,1.5fr)
+
                     minmax(300px,1fr);
+
             }
+
 
         }
 
 
         @media (max-width: 950px) {
+
             .charts-grid { grid-template-columns: 1fr; }
+
             .system-panel { grid-column: auto; }
+
 
             .main-grid {
 
+
                 grid-template-columns:
+
                     1fr;
+
             }
 
 
             .chart-wrapper {
 
+
                 height: 330px;
+
             }
+
 
         }
 
 
         /* =====================================================
+
            MOBILE
+
         ===================================================== */
+
 
         @media (max-width: 650px) {
 
+
             .header {
+
 
                 min-height: 66px;
 
+
                 padding:
+
                     10px 13px;
+
             }
 
 
             .logo {
 
+
                 width: 38px;
+
                 height: 38px;
+
 
                 border-radius: 10px;
 
+
                 font-size: 19px;
+
             }
 
 
             .brand {
 
+
                 gap: 9px;
+
             }
 
 
             .brand h1 {
 
+
                 font-size: 13px;
 
+
                 white-space:
+
                     normal;
 
+
                 line-height:
+
                     1.2;
+
             }
 
 
             .brand p {
 
+
                 font-size: 8px;
+
             }
 
 
             .connection {
 
+
                 padding:
+
                     6px 8px;
+
 
                 font-size: 8px;
 
+
                 gap: 6px;
+
             }
 
 
             .dot {
 
+
                 width: 6px;
+
                 height: 6px;
+
             }
 
 
             .container {
 
+
                 width:
+
                     calc(100% - 20px);
 
+
                 padding:
+
                     21px 0 28px;
+
             }
 
 
             .welcome {
 
+
                 margin-bottom: 16px;
+
             }
 
 
             .welcome h2 {
 
+
                 font-size: 20px;
+
             }
 
 
             .welcome p {
 
+
                 font-size: 10px;
+
             }
 
 
             /* 2 COLUMN MOBILE */
 
+
             .cards {
 
+
                 grid-template-columns:
+
                     repeat(2,minmax(0,1fr));
+
 
                 gap: 9px;
 
+
                 margin-bottom: 12px;
+
             }
 
 
             .card {
 
+
                 padding: 13px;
 
+
                 border-radius: 12px;
+
             }
 
 
             .card-head {
 
+
                 margin-bottom: 11px;
+
             }
 
 
             .card-title {
 
+
                 font-size: 9px;
+
             }
 
 
             .metric-icon {
 
+
                 width: 29px;
+
                 height: 29px;
 
+
                 border-radius: 8px;
+
             }
 
 
             .metric-icon svg {
 
+
                 width: 15px;
+
                 height: 15px;
+
             }
 
 
             .value {
 
+
                 font-size: 21px;
+
             }
 
 
             .unit {
 
+
                 font-size: 9px;
+
             }
 
 
             .panel {
 
+
                 padding: 15px;
 
+
                 border-radius: 13px;
+
             }
 
 
             .panel-header {
 
+
                 flex-direction:
+
                     column;
+
 
                 gap: 10px;
 
+
                 margin-bottom: 12px;
+
             }
 
 
+            .history-toolbar {
+                grid-column: auto;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .history-controls {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .date-navigation,
+            .period-navigation {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 36px minmax(0, 1fr) 36px;
+                gap: 7px;
+            }
+
+            .date-navigation .history-btn,
+            .period-navigation .history-btn {
+                width: 36px;
+            }
+
+            .date-history-label,
+            .window-label {
+                min-width: 0;
+                width: 100%;
+                padding: 0 8px;
+            }
+
             .date-box {
 
+
                 width: 100%;
+
             }
 
 
             .chart-wrapper {
 
+
                 height: 260px;
+
             }
 
 
             .info-grid {
 
+
                 grid-template-columns:
+
                     repeat(2,minmax(0,1fr));
+
             }
+
 
         }
 
 
         /* =====================================================
+
            VERY SMALL PHONE
+
         ===================================================== */
+
 
         @media (max-width: 380px) {
 
+
             .connection span:last-child {
 
+
                 display: none;
+
             }
 
 
             .connection {
 
+
                 width: 24px;
+
                 height: 24px;
+
 
                 padding: 0;
 
+
                 justify-content:
+
                     center;
+
             }
 
 
             .cards {
 
+
                 gap: 8px;
+
             }
 
 
             .card {
 
+
                 padding: 11px;
+
             }
 
 
             .value {
 
+
                 font-size: 19px;
+
             }
 
 
             .info-grid {
 
+
                 grid-template-columns:
+
                     1fr;
+
             }
+
 
         }
 
-    </style>
+
+    
+
+        /* =====================================================
+           FINAL CLEAN COLOR FIX
+           - Waktu LIVE hijau terang
+           - Riwayat Monitoring rata kiri
+           - Angka setiap sensor berbeda warna
+           - Tetap clean, tidak terlalu ramai
+        ===================================================== */
+
+        .history-toolbar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 18px;
+        }
+
+        .history-toolbar::before {
+            position: absolute !important;
+            left: 18px;
+            top: 16px;
+            bottom: 16px;
+            width: 4px;
+            height: auto;
+        }
+
+        .history-info {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 15px;
+            text-align: left !important;
+        }
+
+        .history-info .panel-title,
+        .history-info h3,
+        .history-info h4,
+        .history-info strong {
+            text-align: left !important;
+        }
+
+        .history-info .panel-title {
+            color: #f1f5f9;
+        }
+
+        .history-info .panel-subtitle {
+            color: #7f96b2;
+        }
+
+        .history-controls {
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* WAKTU PERIODE / LIVE */
+        .window-label {
+            color: #39ff72 !important;
+            border-color: rgba(57,255,114,.28) !important;
+            background: rgba(20,70,38,.18) !important;
+            box-shadow: 0 0 12px rgba(57,255,114,.10) !important;
+            font-weight: 700 !important;
+        }
+
+        /* ANGKA SENSOR — WARNA BERBEDA */
+        .voltage-card .value {
+            color: #22d3ee !important;
+            text-shadow: 0 0 12px rgba(34,211,238,.20);
+        }
+
+        .current-card .value {
+            color: #fbbf24 !important;
+            text-shadow: 0 0 12px rgba(251,191,36,.18);
+        }
+
+        .power-card .value {
+            color: #fb7185 !important;
+            text-shadow: 0 0 12px rgba(251,113,133,.18);
+        }
+
+        .frequency-card .value {
+            color: #c084fc !important;
+            text-shadow: 0 0 12px rgba(192,132,252,.18);
+        }
+
+        /* UNIT MENGIKUTI WARNA ANGKA, TAPI LEBIH SOFT */
+        .voltage-card .unit { color: rgba(34,211,238,.72) !important; }
+        .current-card .unit { color: rgba(251,191,36,.72) !important; }
+        .power-card .unit { color: rgba(251,113,133,.72) !important; }
+        .frequency-card .unit { color: rgba(192,132,252,.72) !important; }
+
+        /* Jangan terlalu ramai: glow hanya halus */
+        .card:hover {
+            box-shadow: 0 12px 35px rgba(0,0,0,.30);
+        }
+
+        @media (max-width: 700px) {
+            .history-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .history-info {
+                width: 100%;
+                margin-left: 15px;
+            }
+
+            .history-controls {
+                width: 100%;
+                justify-content: flex-end;
+                margin-left: 0;
+            }
+        }
+
+
+        /* =====================================================
+           PROFESSIONAL UI OVERRIDE
+           Clean • Corporate • Industrial • Minimal glow
+        ===================================================== */
+
+        :root {
+            --pro-bg: #070c13;
+            --pro-panel: #0d1621;
+            --pro-panel-2: #101b28;
+            --pro-border: #1c2a3a;
+            --pro-border-soft: #243447;
+            --pro-text: #f3f6fa;
+            --pro-muted: #7f8da0;
+            --pro-voltage: #29c7e8;
+            --pro-current: #f4b740;
+            --pro-power: #f06a7a;
+            --pro-frequency: #a979e8;
+            --pro-live: #49e878;
+        }
+
+        html, body {
+            background: var(--pro-bg) !important;
+        }
+
+        body {
+            background:
+                linear-gradient(180deg, #080d14 0%, #070c13 100%) !important;
+            color: var(--pro-text);
+        }
+
+        /* Header: simple, premium, no AI-style gradient */
+        .header {
+            background: #0a111a !important;
+            border-bottom: 1px solid #1b2938 !important;
+            box-shadow: 0 4px 18px rgba(0,0,0,.18) !important;
+        }
+
+        .brand h1 {
+            background: none !important;
+            color: #edf3f8 !important;
+        }
+
+        .brand h1::first-letter {
+            color: inherit;
+        }
+
+        .welcome h2 {
+            background: none !important;
+            color: #edf3f8 !important;
+        }
+
+        .welcome p {
+            color: #8291a4 !important;
+        }
+
+        /* Sensor cards */
+        .card {
+            background: #0d1621 !important;
+            border: 1px solid var(--pro-border) !important;
+            border-top: 2px solid var(--accent) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 7px 22px rgba(0,0,0,.20) !important;
+        }
+
+        .card:hover {
+            transform: translateY(-1px) !important;
+            border-color: var(--pro-border-soft) !important;
+            box-shadow: 0 9px 26px rgba(0,0,0,.25) !important;
+        }
+
+        .card::after {
+            display: none !important;
+        }
+
+        .card-title {
+            color: #8291a4 !important;
+            letter-spacing: .45px !important;
+        }
+
+        .metric-icon {
+            background: rgba(255,255,255,.035) !important;
+            border: 1px solid rgba(255,255,255,.07) !important;
+            box-shadow: none !important;
+        }
+
+        /* Angka dibuat berbeda, tetapi tetap elegan */
+        .voltage-card .value {
+            color: var(--pro-voltage) !important;
+            text-shadow: none !important;
+        }
+
+        .current-card .value {
+            color: var(--pro-current) !important;
+            text-shadow: none !important;
+        }
+
+        .power-card .value {
+            color: var(--pro-power) !important;
+            text-shadow: none !important;
+        }
+
+        .frequency-card .value {
+            color: var(--pro-frequency) !important;
+            text-shadow: none !important;
+        }
+
+        .voltage-card .unit { color: rgba(41,199,232,.75) !important; }
+        .current-card .unit { color: rgba(244,183,64,.75) !important; }
+        .power-card .unit { color: rgba(240,106,122,.75) !important; }
+        .frequency-card .unit { color: rgba(169,121,232,.75) !important; }
+
+        .voltage-card .metric-icon { color: var(--pro-voltage) !important; }
+        .current-card .metric-icon { color: var(--pro-current) !important; }
+        .power-card .metric-icon { color: var(--pro-power) !important; }
+        .frequency-card .metric-icon { color: var(--pro-frequency) !important; }
+
+        /* Riwayat Monitoring: rata kiri dan lebih seperti dashboard industri */
+        .history-toolbar {
+            background: #0d1621 !important;
+            border: 1px solid var(--pro-border) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 7px 22px rgba(0,0,0,.18) !important;
+            padding: 15px 16px !important;
+            justify-content: flex-start !important;
+            gap: 16px !important;
+        }
+
+        .history-toolbar::before {
+            content: "" !important;
+            position: static !important;
+            flex: 0 0 3px !important;
+            width: 3px !important;
+            height: 42px !important;
+            align-self: center !important;
+            border-radius: 3px !important;
+            background: var(--pro-live) !important;
+            box-shadow: 0 0 8px rgba(73,232,120,.22) !important;
+        }
+
+        .history-info {
+            margin-left: 0 !important;
+            text-align: left !important;
+            flex: 1 1 auto !important;
+        }
+
+        .history-info .panel-title {
+            color: #eaf1f6 !important;
+            text-align: left !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+        }
+
+        .history-info .panel-subtitle {
+            color: #738297 !important;
+            text-align: left !important;
+            margin-top: 3px !important;
+        }
+
+        .history-controls {
+            margin-left: auto !important;
+        }
+
+        .history-btn {
+            background: #0a121c !important;
+            border: 1px solid #263548 !important;
+            color: #b9c5d1 !important;
+            box-shadow: none !important;
+        }
+
+        .history-btn:hover:not(:disabled) {
+            background: #111c29 !important;
+            border-color: #3a4b60 !important;
+        }
+
+        /* Periode LIVE: satu-satunya elemen yang boleh benar-benar menyala */
+        .window-label {
+            background: rgba(73,232,120,.055) !important;
+            border: 1px solid rgba(73,232,120,.45) !important;
+            color: var(--pro-live) !important;
+            box-shadow: 0 0 10px rgba(73,232,120,.10) !important;
+            font-weight: 700 !important;
+            letter-spacing: .15px !important;
+        }
+
+        /* Chart panels */
+        .charts-grid .chart-panel {
+            background: #0d1621 !important;
+            border: 1px solid var(--pro-border) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 7px 22px rgba(0,0,0,.18) !important;
+        }
+
+        .charts-grid .chart-panel::before {
+            height: 2px !important;
+            background: var(--chart-accent) !important;
+            box-shadow: none !important;
+        }
+
+        .charts-grid .chart-panel .panel-title::before {
+            width: 6px !important;
+            height: 6px !important;
+            box-shadow: none !important;
+        }
+
+        .panel-subtitle {
+            color: #718096 !important;
+        }
+
+        .system-panel {
+            background: #0d1621 !important;
+            border: 1px solid var(--pro-border) !important;
+            box-shadow: 0 7px 22px rgba(0,0,0,.18) !important;
+        }
+
+        /* Header clock tetap informatif, tidak dibuat neon */
+        .live-clock {
+            color: #d8e0e8 !important;
+        }
+
+        .clock-zone {
+            color: #6fa7d7 !important;
+        }
+
+        @media (max-width: 700px) {
+            .history-toolbar::before {
+                align-self: flex-start !important;
+                margin-top: 2px !important;
+            }
+        }
+
+
+
+        /* =====================================================
+           FINAL RESPONSIVE FIX
+           Desktop • Laptop • Tablet • Mobile
+           ===================================================== */
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: min(calc(100% - 64px), 1680px);
+            max-width: 1680px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .brand,
+        .history-info,
+        .history-controls,
+        .chart-panel,
+        .system-panel {
+            min-width: 0;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            min-width: 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        /* LAPTOP */
+        @media (max-width: 1100px) {
+            .container {
+                width: calc(100% - 48px);
+                max-width: 1680px;
+                margin-left: auto;
+                margin-right: auto;
+                padding-top: 26px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-toolbar {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* TABLET */
+        @media (max-width: 800px) {
+            .header {
+                position: relative;
+                padding: 12px 18px;
+                gap: 12px;
+            }
+
+            .brand {
+                flex: 1 1 auto;
+            }
+
+            .connection {
+                flex-shrink: 1;
+                max-width: 48%;
+            }
+
+            .live-clock {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .container {
+                width: calc(100% - 40px);
+                max-width: none;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 24px 0 30px;
+            }
+
+            .welcome {
+                margin-bottom: 18px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 300px;
+            }
+
+            .history-toolbar {
+                width: 100%;
+                flex-wrap: nowrap;
+            }
+
+            .history-controls {
+                flex-shrink: 0;
+            }
+        }
+
+        /* PHONE */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 11px 14px;
+            }
+
+            .brand {
+                width: 100%;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .brand h1 {
+                font-size: 14px;
+                white-space: normal;
+                line-height: 1.25;
+            }
+
+            .brand p {
+                font-size: 8.5px;
+            }
+
+            .connection {
+                width: 100%;
+                max-width: none;
+                justify-content: center;
+                padding: 7px 10px;
+                border-radius: 9px;
+            }
+
+            .live-clock {
+                font-size: 11px;
+                justify-content: center;
+            }
+
+            .clock-zone {
+                font-size: 10px;
+            }
+
+            .container {
+                width: calc(100% - 28px);
+                max-width: none;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 20px 0 26px;
+            }
+
+            .welcome h2 {
+                font-size: 21px;
+            }
+
+            .welcome p {
+                font-size: 10px;
+            }
+
+            /* Dua kartu per baris masih nyaman di HP */
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .card {
+                padding: 13px;
+                border-radius: 11px;
+            }
+
+            .card-head {
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-size: 9px;
+            }
+
+            .metric-icon {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+            }
+
+            .metric-icon svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            .value {
+                font-size: clamp(22px, 7vw, 28px);
+            }
+
+            .unit {
+                font-size: 9px;
+            }
+
+            /* Timeline HP: info tetap kiri, kontrol turun ke bawah */
+            .history-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 14px;
+                border-radius: 11px !important;
+            }
+
+            .history-toolbar::before {
+                display: none !important;
+            }
+
+            .history-info {
+                width: 100%;
+                margin: 0 !important;
+            }
+
+            .history-info .panel-title {
+                font-size: 14px !important;
+            }
+
+            .history-info .panel-subtitle {
+                font-size: 9.5px;
+                line-height: 1.45;
+            }
+
+            .history-controls {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 40px minmax(0, 1fr) 40px;
+                gap: 8px;
+                margin: 0 !important;
+            }
+
+            .history-btn {
+                width: 40px;
+                height: 38px;
+                font-size: 21px;
+            }
+
+            .window-label {
+                min-width: 0 !important;
+                width: 100%;
+                height: 38px;
+                padding: 0 7px;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                white-space: nowrap;
+            }
+
+            .chart-panel,
+            .system-panel {
+                border-radius: 11px !important;
+            }
+
+            .chart-wrapper {
+                height: 255px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+            }
+
+            .panel-subtitle {
+                font-size: 9.5px;
+            }
+        }
+
+        /* SMALL PHONE */
+        @media (max-width: 430px) {
+            .container {
+                width: calc(100% - 24px);
+                max-width: none;
+                margin-left: auto;
+                margin-right: auto;
+                padding-top: 17px;
+            }
+
+            .cards {
+                gap: 8px;
+            }
+
+            .card {
+                padding: 11px;
+            }
+
+            .card-title {
+                font-size: 8px;
+            }
+
+            .metric-icon {
+                width: 27px;
+                height: 27px;
+            }
+
+            .value {
+                font-size: 21px;
+                letter-spacing: -.7px;
+            }
+
+            .unit {
+                font-size: 8px;
+            }
+
+            .history-info .panel-title {
+                font-size: 13px !important;
+            }
+
+            .history-info .panel-subtitle {
+                font-size: 9px;
+            }
+
+            .chart-wrapper {
+                height: 225px;
+            }
+        }
+
+        /* EXTRA SMALL PHONE */
+        @media (max-width: 360px) {
+            .header {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .brand h1 {
+                font-size: 12px;
+            }
+
+            .brand p {
+                display: none;
+            }
+
+            .live-clock {
+                font-size: 9px;
+            }
+
+            .connection-divider,
+            .clock-zone {
+                display: none !important;
+            }
+
+            .container {
+                width: calc(100% - 20px);
+                max-width: none;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .cards {
+                gap: 7px;
+            }
+
+            .card {
+                padding: 9px;
+            }
+
+            .card-head {
+                margin-bottom: 9px;
+            }
+
+            .metric-icon {
+                width: 25px;
+                height: 25px;
+            }
+
+            .value {
+                font-size: 19px;
+            }
+
+            .history-controls {
+                grid-template-columns: 36px minmax(0, 1fr) 36px;
+            }
+
+            .history-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .window-label {
+                height: 36px;
+                font-size: 9px;
+            }
+
+            .chart-wrapper {
+                height: 210px;
+            }
+        }
+
+
+
+        /* =====================================================
+           MOBILE HISTORY NAVIGATION FINAL FIX
+           Date navigation dan period navigation dibuat 2 baris
+           agar tidak saling menyempit di layar HP.
+        ===================================================== */
+        @media (max-width: 700px) {
+            .history-toolbar {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
+                padding: 14px !important;
+            }
+
+            .history-info {
+                width: 100% !important;
+                flex: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .history-controls {
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .date-navigation,
+            .period-navigation {
+                width: 100% !important;
+                min-width: 0 !important;
+                display: grid !important;
+                grid-template-columns: 38px minmax(0, 1fr) 38px !important;
+                align-items: center !important;
+                gap: 7px !important;
+            }
+
+            .date-history-label,
+            .window-label {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                box-sizing: border-box !important;
+                height: 38px !important;
+                padding: 0 8px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                font-size: 10px !important;
+            }
+
+            .history-btn {
+                width: 38px !important;
+                min-width: 38px !important;
+                height: 38px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .history-toolbar {
+                gap: 10px !important;
+                padding: 12px !important;
+            }
+
+            .history-info .panel-title {
+                font-size: 13px !important;
+            }
+
+            .history-info .panel-subtitle {
+                font-size: 8.5px !important;
+                line-height: 1.4 !important;
+            }
+
+            .date-navigation,
+            .period-navigation {
+                grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+                gap: 6px !important;
+            }
+
+            .history-btn {
+                width: 36px !important;
+                min-width: 36px !important;
+                height: 36px !important;
+                font-size: 19px !important;
+            }
+
+            .date-history-label,
+            .window-label {
+                height: 36px !important;
+                font-size: 9.5px !important;
+                padding: 0 6px !important;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .history-toolbar {
+                padding: 10px !important;
+            }
+
+            .date-navigation,
+            .period-navigation {
+                grid-template-columns: 34px minmax(0, 1fr) 34px !important;
+                gap: 5px !important;
+            }
+
+            .history-btn {
+                width: 34px !important;
+                min-width: 34px !important;
+                height: 34px !important;
+                font-size: 18px !important;
+            }
+
+            .date-history-label,
+            .window-label {
+                height: 34px !important;
+                font-size: 9px !important;
+            }
+        }
+
+</style>
+
 
 </head>
 
@@ -1284,1368 +2984,1860 @@
 
 
 <!-- ==========================================================
+
      HEADER
+
 =========================================================== -->
+
 
 <header class="header">
 
+
     <div class="brand">
 
+
         <div class="logo">
+
     <img
+
         src="/images/logo-pln.png"
+
         alt="Logo PLN"
+
     >
+
 </div>
+
 
         <div>
 
+
             <h1>
+
                 MONITORING LISTRIK RUMAH F3
+
             </h1>
 
+
             <p>
+
                 Smart Electrical Monitoring System
+
             </p>
 
+
         </div>
+
 
     </div>
 
 
     <div class="connection" id="connectionStatusBox">
+
     <span class="dot" id="connectionDot"></span>
+
     <span id="connectionStatus">System Online</span>
+
 
     <span class="connection-divider"></span>
 
+
     <span class="live-clock">
+
         <span id="liveClock">00:00:00</span>
+
         <span class="clock-zone">WIB</span>
+
     </span>
+
 </div>
+
 
 </header>
 
 
-
 <!-- ==========================================================
+
      MAIN
+
 =========================================================== -->
+
 
 <main class="container">
 
 
     <div class="welcome">
 
+
         <h2>
+
             Dashboard Monitoring
+
         </h2>
 
+
         <p>
+
             Pemantauan kondisi listrik rumah secara real-time.
+
         </p>
+
 
     </div>
 
 
-
     <!-- ======================================================
+
          SENSOR CARDS
+
     ======================================================= -->
+
 
     <section class="cards">
 
 
         <!-- VOLTAGE -->
 
+
         <div class="card voltage-card">
+
 
             <div class="card-head">
 
+
                 <div class="card-title">
+
                     Tegangan
+
                 </div>
+
 
                 <div class="metric-icon">
 
+
                     <svg
+
                         viewBox="0 0 24 24"
+
                         fill="none"
+
                         stroke-width="2"
+
                         stroke-linecap="round"
+
                         stroke-linejoin="round">
 
+
                         <path
+
                             d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"
+
                         />
+
 
                     </svg>
 
+
                 </div>
+
 
             </div>
 
 
             <div class="metric-value">
 
+
                 <span
+
                     class="value"
+
                     id="voltage">
+
                     —
+
                 </span>
 
+
                 <span class="unit">
+
                     V
+
                 </span>
+
 
             </div>
 
-        </div>
 
+        </div>
 
 
         <!-- CURRENT -->
 
+
         <div class="card current-card">
+
 
             <div class="card-head">
 
+
                 <div class="card-title">
+
                     Arus
+
                 </div>
+
 
                 <div class="metric-icon">
 
+
                     <svg
+
                         viewBox="0 0 24 24"
+
                         fill="none"
+
                         stroke-width="2"
+
                         stroke-linecap="round"
+
                         stroke-linejoin="round">
+
 
                         <path d="M12 2v20"/>
 
+
                         <path d="M7 7l5-5 5 5"/>
+
 
                         <path d="M7 17l5 5 5-5"/>
 
+
                     </svg>
 
+
                 </div>
+
 
             </div>
 
 
             <div class="metric-value">
 
+
                 <span
+
                     class="value"
+
                     id="current">
+
                     —
+
                 </span>
 
+
                 <span class="unit">
+
                     A
+
                 </span>
+
 
             </div>
 
-        </div>
 
+        </div>
 
 
         <!-- POWER -->
 
+
         <div class="card power-card">
 
+
             <div class="card-head">
 
+
                 <div class="card-title">
+
                     Daya Aktif
+
                 </div>
+
 
                 <div class="metric-icon">
 
+
                     <svg
+
                         viewBox="0 0 24 24"
+
                         fill="none"
+
                         stroke-width="2"
+
                         stroke-linecap="round"
+
                         stroke-linejoin="round">
 
+
                         <path
+
                             d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"
+
                         />
+
 
                     </svg>
 
+
                 </div>
+
 
             </div>
 
 
             <div class="metric-value">
 
+
                 <span
+
                     class="value"
+
                     id="power">
+
                     —
+
                 </span>
 
+
                 <span class="unit">
+
                     W
+
                 </span>
 
+
             </div>
+
 
         </div>
-
-
-
-        <!-- ENERGY -->
-
-        <div class="card energy-card">
-
-            <div class="card-head">
-
-                <div class="card-title">
-                    Energi
-                </div>
-
-                <div class="metric-icon">
-
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
-                        <rect
-                            x="3"
-                            y="5"
-                            width="16"
-                            height="14"
-                            rx="2"
-                        />
-
-                        <path d="M21 9v6"/>
-
-                        <path
-                            d="M10 8l-3 4h3l-1 4 4-5h-3l1-3z"
-                        />
-
-                    </svg>
-
-                </div>
-
-            </div>
-
-
-            <div class="metric-value">
-
-                <span
-                    class="value"
-                    id="energy">
-                    —
-                </span>
-
-                <span class="unit">
-                    kWh
-                </span>
-
-            </div>
-
-        </div>
-
 
 
         <!-- FREQUENCY -->
 
+
         <div class="card frequency-card">
 
+
             <div class="card-head">
 
+
                 <div class="card-title">
+
                     Frekuensi
+
                 </div>
+
 
                 <div class="metric-icon">
 
+
                     <svg
+
                         viewBox="0 0 24 24"
+
                         fill="none"
+
                         stroke-width="2"
+
                         stroke-linecap="round"
+
                         stroke-linejoin="round">
 
+
                         <path
+
                             d="M2 12h4l2-7 4 14 2-7h8"
+
                         />
+
 
                     </svg>
 
+
                 </div>
+
 
             </div>
 
 
             <div class="metric-value">
 
+
                 <span
+
                     class="value"
+
                     id="frequency">
+
                     —
+
                 </span>
 
+
                 <span class="unit">
+
                     Hz
+
                 </span>
 
+
             </div>
+
 
         </div>
 
 
-
-        <!-- POWER FACTOR -->
-
-        <div class="card pf-card">
-
-            <div class="card-head">
-
-                <div class="card-title">
-                    Power Factor
-                </div>
-
-                <div class="metric-icon">
-
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-
-                        <path
-                            d="M4 14a8 8 0 1 1 16 0"
-                        />
-
-                        <path
-                            d="M12 14l4-5"
-                        />
-
-                        <circle
-                            cx="12"
-                            cy="14"
-                            r="1"
-                        />
-
-                    </svg>
-
-                </div>
-
-            </div>
-
-
-            <div class="metric-value">
-
-                <span
-                    class="value"
-                    id="powerFactor">
-                    —
-                </span>
-
-                <span class="unit">
-                    PF
-                </span>
-
-            </div>
-
-        </div>
-
-
-    </section>
-
+        </section>
 
 
     <!-- ======================================================
+
          MAIN GRID
+
     ======================================================= -->
 
+
     <!-- ======================================================
+
          GRAFIK MONITORING
+
     ======================================================= -->
+
     <section class="charts-grid">
-        <div class="panel chart-panel">
-            <div class="panel-header"><div><div class="panel-title">Pemakaian Daya</div><div class="panel-subtitle">Rata-rata daya aktif setiap jam</div></div><input type="date" id="historyDate" class="date-box"></div>
-            <div class="chart-wrapper"><canvas id="dailyChart"></canvas></div>
+
+        <!-- HISTORY CONTROLS -->
+        <div class="history-toolbar">
+            <div class="history-info">
+                <div class="panel-title">Riwayat Monitoring</div>
+                <div class="panel-subtitle">Grafik 6 jam • Gunakan navigasi tanggal dan periode untuk melihat riwayat</div>
+            </div>
+
+            <div class="history-controls">
+                <div class="date-navigation">
+                    <button type="button" class="history-btn" id="prevDate" aria-label="Hari sebelumnya">‹</button>
+                    <div class="date-history-label" id="historyDateLabel">—</div>
+                    <button type="button" class="history-btn" id="nextDate" aria-label="Hari berikutnya">›</button>
+                </div>
+
+                <div class="period-navigation">
+                    <button type="button" class="history-btn" id="prevWindow" aria-label="Periode sebelumnya">‹</button>
+                    <div class="window-label" id="windowLabel">—</div>
+                    <button type="button" class="history-btn" id="nextWindow" aria-label="Periode berikutnya">›</button>
+                </div>
+            </div>
         </div>
-        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Tegangan</div><div class="panel-subtitle">Rata-rata tegangan setiap jam</div></div></div><div class="chart-wrapper"><canvas id="voltageChart"></canvas></div></div>
-        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Arus</div><div class="panel-subtitle">Rata-rata arus setiap jam</div></div></div><div class="chart-wrapper"><canvas id="currentChart"></canvas></div></div>
-        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Energi</div><div class="panel-subtitle">Energi terukur dalam kWh</div></div></div><div class="chart-wrapper"><canvas id="energyChart"></canvas></div></div>
-        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Frekuensi</div><div class="panel-subtitle">Rata-rata frekuensi setiap jam</div></div></div><div class="chart-wrapper"><canvas id="frequencyChart"></canvas></div></div>
-        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Power Factor</div><div class="panel-subtitle">Rata-rata faktor daya setiap jam</div></div></div><div class="chart-wrapper"><canvas id="powerFactorChart"></canvas></div></div>
+
+        <div class="panel chart-panel">
+
+            <div class="panel-header"><div><div class="panel-title">Pemakaian Daya</div><div class="panel-subtitle">Rata-rata daya aktif setiap menit</div></div></div>
+
+            <div class="chart-wrapper"><canvas id="dailyChart"></canvas></div>
+
+        </div>
+
+        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Tegangan</div><div class="panel-subtitle">Rata-rata tegangan setiap menit</div></div></div><div class="chart-wrapper"><canvas id="voltageChart"></canvas></div></div>
+
+        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Arus</div><div class="panel-subtitle">Rata-rata arus setiap menit</div></div></div><div class="chart-wrapper"><canvas id="currentChart"></canvas></div></div>
+
+        <div class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Frekuensi</div><div class="panel-subtitle">Rata-rata frekuensi setiap menit</div></div></div><div class="chart-wrapper"><canvas id="frequencyChart"></canvas></div></div>
 
         <div class="panel system-panel">
+
             <div class="panel-title">Informasi Sistem</div>
+
             <div class="panel-subtitle">Kondisi monitoring saat ini</div>
+
             <div class="status-box" id="systemStatusBox">
+
                 <div class="status-icon" id="systemStatusIcon">✓</div>
+
                 <div><div class="status-title" id="systemStatusTitle">Sistem Monitoring Aktif</div><div class="status-text" id="systemStatusText">Data diperbarui dari perangkat monitoring.</div></div>
+
             </div>
+
             <div class="info-grid">
+
                 <div class="info-item"><div class="info-label">Device ID</div><div class="info-value" id="deviceId">—</div></div>
+
                 <div class="info-item"><div class="info-label">Daya Semu</div><div class="info-value"><span id="apparentPower">—</span> VA</div></div>
+
                 <div class="info-item"><div class="info-label">Pembacaan Terakhir</div><div class="info-value" id="lastUpdate">—</div></div>
+
                 <div class="info-item"><div class="info-label">Status Beban</div><div class="info-value"><span id="loadStatus">—</span></div></div>
+
             </div>
+
             <div class="token-box"><div class="token-label">ESTIMASI TOKEN LISTRIK</div><div class="token-value">Belum diatur</div><div class="token-note">Fitur token akan terhubung setelah konfigurasi token listrik dilakukan.</div></div>
+
         </div>
+
     </section>
+
 
 </main>
 
 
-
 <!-- ==========================================================
+
      FOOTER
+
 =========================================================== -->
+
 
 <footer class="footer">
 
+
     PROYEK TEKNOLOGI INFORMASI © 2026
+
 
 </footer>
 
 
-
 <script>
 
+
     /* ========================================================
+
        GLOBAL
+
     ======================================================== */
 
     let dailyChart;
     let voltageChart;
     let currentChart;
-    let energyChart;
     let frequencyChart;
-    let powerFactorChart;
+
+    let historyData = [];
+    let currentWindow = 0;
+    let followingLive = true;
+
+    const HISTORY_WINDOWS = [
+        { start: 0, end: 360, label: '00:00 – 06:00' },
+        { start: 360, end: 720, label: '06:00 – 12:00' },
+        { start: 720, end: 1080, label: '12:00 – 18:00' },
+        { start: 1080, end: 1440, label: '18:00 – 00:00' }
+    ];
+
+    function getJakartaDateKey(date = new Date()) {
+        const parts = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(date);
+        const getPart = type => parts.find(part => part.type === type)?.value;
+        return `${getPart('year')}-${getPart('month')}-${getPart('day')}`;
+    }
+
+    function shiftDateKey(dateKey, days) {
+        const [year, month, day] = dateKey.split('-').map(Number);
+        const date = new Date(Date.UTC(year, month - 1, day));
+        date.setUTCDate(date.getUTCDate() + days);
+        return date.toISOString().slice(0, 10);
+    }
+
+    function formatHistoryDate(dateKey) {
+        const [year, month, day] = dateKey.split('-').map(Number);
+        const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+        return new Intl.DateTimeFormat('id-ID', {
+            timeZone: 'Asia/Jakarta', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
+        }).format(date);
+    }
+
+    let selectedHistoryDate = getJakartaDateKey();
+
+    function getActiveWindowIndex() {
+        if (selectedHistoryDate !== getJakartaDateKey()) return 3;
+
+        const now = new Date();
+        const hour = Number(new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Jakarta', hour: '2-digit', hour12: false
+        }).format(now));
+
+        if (hour < 6) return 0;
+        if (hour < 12) return 1;
+        if (hour < 18) return 2;
+        return 3;
+    }
 
     const OFFLINE_TIMEOUT_MS = 15000;
-
     let historyRefreshTimer = null;
 
-
     /* ========================================================
+
        CONNECTION STATUS
+
     ======================================================== */
+
 
     function setConnectionUI(online) {
 
+
         const box = document.getElementById('connectionStatusBox');
+
         const dot = document.getElementById('connectionDot');
+
         const status = document.getElementById('connectionStatus');
 
+
         const sb = document.getElementById('systemStatusBox');
+
         const si = document.getElementById('systemStatusIcon');
+
         const st = document.getElementById('systemStatusTitle');
+
         const sx = document.getElementById('systemStatusText');
+
 
         if (online) {
 
+
             box.classList.remove('offline');
 
+
             dot.classList.remove('offline');
+
             dot.classList.add('online');
+
 
             status.textContent = 'System Online';
 
+
             sb.style.background = 'var(--green-soft)';
+
             sb.style.borderColor = 'rgba(34,197,94,.20)';
 
+
             si.style.background = '#16a34a';
+
             si.textContent = '✓';
 
+
             st.style.color = '#86efac';
+
             st.textContent = 'Sistem Monitoring Aktif';
 
+
             sx.textContent =
+
                 'Data diperbarui dari perangkat monitoring.';
+
 
         } else {
 
+
             box.classList.add('offline');
 
+
             dot.classList.remove('online');
+
             dot.classList.add('offline');
+
 
             status.textContent = 'System Offline';
 
+
             sb.style.background = 'var(--red-soft)';
+
             sb.style.borderColor = 'rgba(239,68,68,.20)';
 
+
             si.style.background = '#dc2626';
+
             si.textContent = '×';
 
+
             st.style.color = '#fca5a5';
+
             st.textContent = 'ESP32 Tidak Terhubung';
 
+
             sx.textContent =
+
                 'Tidak ada data baru dari perangkat monitoring.';
+
         }
+
     }
 
 
     function updateConnectionStatus(createdAt) {
 
+
         if (!createdAt) {
+
 
             setConnectionUI(false);
 
+
             return;
+
         }
 
+
         const lastSeen =
+
             new Date(createdAt).getTime();
 
+
         const age =
+
             Date.now() - lastSeen;
 
+
         setConnectionUI(
+
             Number.isFinite(lastSeen) &&
+
             age <= OFFLINE_TIMEOUT_MS
+
         );
+
     }
 
 
     /* ========================================================
+
        LATEST DATA
+
     ======================================================== */
+
 
     async function loadLatestData() {
 
+
         try {
 
+
             const response =
+
                 await fetch(
+
                     '/api/readings/latest',
+
                     {
+
                         cache: 'no-store'
+
                     }
+
                 );
 
+
             const result =
+
                 await response.json();
 
+
             if (
+
                 !result.success ||
+
                 !result.data
+
             ) {
+
 
                 updateConnectionStatus(null);
 
+
                 return;
+
             }
 
+
             const data =
+
                 result.data;
 
 
             /* =========================
+
                SENSOR CARD
+
             ========================= */
 
+
             document.getElementById('voltage')
+
                 .textContent =
+
                 data.voltage ?? '—';
 
+
             document.getElementById('current')
+
                 .textContent =
+
                 data.current ?? '—';
 
+
             document.getElementById('power')
+
                 .textContent =
+
                 data.power ?? '—';
 
-            document.getElementById('energy')
-                .textContent =
-                data.energy ?? '—';
 
             document.getElementById('frequency')
-                .textContent =
-                data.frequency ?? '—';
 
-            document.getElementById('powerFactor')
                 .textContent =
-                data.power_factor ?? '—';
+
+                data.frequency ?? '—';
 
 
             /* =========================
+
                SYSTEM INFORMATION
+
             ========================= */
 
+
             document.getElementById('apparentPower')
+
                 .textContent =
+
                 data.apparent_power ?? '—';
 
+
             document.getElementById('deviceId')
+
                 .textContent =
+
                 data.device_id ?? '—';
 
 
             /* =========================
+
                LAST UPDATE
+
             ========================= */
+
 
             if (data.created_at) {
 
+
                 const d =
+
                     new Date(data.created_at);
 
+
                 document.getElementById('lastUpdate')
+
                     .textContent =
+
                     d.toLocaleString(
+
                         'id-ID',
+
                         {
+
                             timeZone: 'Asia/Jakarta',
+
                             weekday: 'long',
+
                             day: '2-digit',
+
                             month: 'long',
+
                             year: 'numeric',
+
                             hour: '2-digit',
+
                             minute: '2-digit',
+
                             second: '2-digit',
+
                             hour12: false
+
                         }
+
                     ) + ' WIB';
+
             }
 
 
             /* =========================
+
                LOAD STATUS
+
             ========================= */
 
+
             const power =
+
                 Number(data.power);
 
+
             const el =
+
                 document.getElementById('loadStatus');
+
 
             if (!isNaN(power)) {
 
+
                 if (power < 500) {
+
 
                     el.textContent = 'Normal';
 
+
                     el.style.background =
+
                         'rgba(34,197,94,.10)';
 
+
                     el.style.color =
+
                         '#6ee7a0';
+
 
                 } else if (power < 1000) {
 
+
                     el.textContent = 'Tinggi';
 
+
                     el.style.background =
+
                         'rgba(245,158,11,.10)';
 
+
                     el.style.color =
+
                         '#fbbf24';
+
 
                 } else {
 
+
                     el.textContent =
+
                         'Sangat Tinggi';
 
+
                     el.style.background =
+
                         'rgba(239,68,68,.10)';
 
+
                     el.style.color =
+
                         '#f87171';
+
                 }
+
             }
 
 
             /* =========================
+
                CONNECTION
+
             ========================= */
 
+
             updateConnectionStatus(
+
                 data.created_at
+
             );
+
 
         } catch (error) {
 
+
             console.error(
+
                 'Gagal mengambil data terbaru:',
+
                 error
+
             );
+
         }
+
     }
 
 
     /* ========================================================
+
        CHART CREATOR
+
        1 HARI = 1440 TITIK
+
     ======================================================== */
 
+
     function createLineChart(
+
         existing,
+
         id,
+
         label,
+
         values,
+
         yTitle,
+
         accent,
+
         unit
+
     ) {
 
+
         const ctx =
+
             document.getElementById(id);
+
 
         if (!ctx) {
 
+
             return existing;
+
         }
 
 
         if (existing) {
 
+
             existing.destroy();
+
         }
 
 
         return new Chart(
+
             ctx,
+
             {
+
 
                 type: 'line',
 
+
                 data: {
 
+
                     labels:
+
                         window.historyLabels,
+
 
                     datasets: [
 
+
                         {
+
 
                             label: label,
 
+
                             data: values,
+
 
                             borderColor: accent,
 
+
                             backgroundColor:
-                                accent + '18',
+
+                                accent + '28',
+
 
                             borderWidth: 2.5,
 
+
                             tension: 0.35,
+
 
                             fill: true,
 
+
                             spanGaps: false,
 
+
                             /*
+
                              * Karena sekarang ada 1440 titik,
+
                              * titik tidak ditampilkan semuanya
+
                              * agar grafik tetap bersih.
+
                              */
+
 
                             pointRadius: 0,
 
+
                             pointHoverRadius: 6,
 
+
                             pointBackgroundColor:
+
                                 accent,
 
+
                             pointBorderColor:
+
                                 '#0f1723',
 
+
                             pointBorderWidth: 2
+
                         }
 
+
                     ]
+
                 },
 
 
                 options: {
 
+
                     responsive: true,
+
 
                     maintainAspectRatio: false,
 
 
                     interaction: {
 
+
                         intersect: false,
 
+
                         mode: 'index'
+
                     },
 
 
                     plugins: {
 
+
                         legend: {
+
 
                             display: true,
 
+
                             position: 'top',
+
 
                             align: 'start',
 
+
                             labels: {
+
 
                                 usePointStyle: true,
 
+
                                 pointStyle: 'circle',
+
 
                                 boxWidth: 7,
 
+
                                 color: '#8998aa',
+
 
                                 font: {
 
+
                                     family: 'Inter',
+
 
                                     size: 9,
 
+
                                     weight: '500'
+
                                 }
+
                             }
+
                         },
 
 
                         tooltip: {
 
+
                             backgroundColor:
+
                                 '#101a28',
 
+
                             borderColor:
+
                                 '#263548',
+
 
                             borderWidth: 1,
 
+
                             titleColor:
+
                                 '#f1f5f9',
 
+
                             bodyColor:
+
                                 '#c5d0dc',
 
+
                             padding: 10,
+
 
                             displayColors: false,
 
 
                             callbacks: {
 
+
                                 label: function(context) {
 
+
                                     if (
+
                                         context.raw === null ||
+
                                         context.raw === undefined
+
                                     ) {
 
+
                                         return 'Belum ada data';
+
                                     }
 
 
                                     return (
+
                                         label +
+
                                         ': ' +
+
                                         context.raw +
+
                                         ' ' +
+
                                         unit
+
                                     );
+
                                 }
+
                             }
+
                         }
+
                     },
 
 
                     scales: {
 
+
                         y: {
+
 
                             beginAtZero: false,
 
+
                             border: {
 
+
                                 display: false
+
                             },
+
 
                             grid: {
 
+
                                 color:
-                                    'rgba(116,131,152,.12)'
+
+                                    'rgba(116,131,152,.16)'
+
                             },
+
 
                             ticks: {
 
+
                                 color:
+
                                     '#66758a',
+
 
                                 font: {
 
+
                                     family: 'Inter',
 
+
                                     size: 9
+
                                 }
+
                             },
+
 
                             title: {
 
+
                                 display: true,
+
 
                                 text: yTitle,
 
+
                                 color:
+
                                     '#66758a',
+
 
                                 font: {
 
+
                                     family: 'Inter',
+
 
                                     size: 9,
 
+
                                     weight: '500'
+
                                 }
+
                             }
+
                         },
 
 
                         x: {
 
+
                             border: {
 
+
                                 display: false
+
                             },
+
 
                             grid: {
 
+
                                 display: false
+
                             },
+
 
                             ticks: {
 
+
                                 color:
+
                                     '#66758a',
+
 
                                 maxRotation: 0,
 
+
                                 autoSkip: false,
+
 
                                 font: {
 
+
                                     family: 'Inter',
 
+
                                     size: 8
+
                                 },
 
+
                                 /*
+
                                  * Data tetap 1440 titik,
+
                                  * tetapi label hanya ditampilkan
+
                                  * setiap 1 jam.
+
                                  */
 
+
                                 callback: function(
+
                                     value,
+
                                     index
+
                                 ) {
 
+
                                     if (
+
                                         index % 60 === 0
+
                                     ) {
 
+
                                         return this
+
                                             .getLabelForValue(
+
                                                 value
+
                                             );
+
                                     }
 
+
                                     return '';
+
                                 }
+
                             },
+
 
                             title: {
 
+
                                 display: true,
+
 
                                 text: 'Waktu',
 
+
                                 color:
+
                                     '#66758a',
+
 
                                 font: {
 
+
                                     family: 'Inter',
+
 
                                     size: 9,
 
+
                                     weight: '500'
+
                                 }
+
                             }
+
                         }
+
                     }
+
                 }
+
             }
+
         );
+
     }
 
 
     /* ========================================================
+
        LOAD HISTORY
+
        1 MENIT / TITIK
+
        24 JAM = 1440 TITIK
+
     ======================================================== */
+
 
     async function loadDailyHistory() {
 
-        const date =
-            document.getElementById(
-                'historyDate'
-            ).value;
-
-        if (!date) {
-
-            return;
+        if (followingLive) {
+            selectedHistoryDate = getJakartaDateKey();
+            currentWindow = getActiveWindowIndex();
         }
 
-
         try {
+            const response = await fetch(
+                `/api/readings/history?date=${selectedHistoryDate}`,
+                { cache: 'no-store' }
+            );
 
-            const response =
-                await fetch(
-                    `/api/readings/history?date=${date}`,
-                    {
-                        cache: 'no-store'
-                    }
-                );
-
-
-            const result =
-                await response.json();
-
+            const result = await response.json();
 
             if (!result.success) {
-
-                console.error(
-                    'History gagal:',
-                    result
-                );
-
+                console.error('History gagal:', result);
                 return;
             }
 
+            historyData = result.data || [];
+            renderHistoryWindow();
 
-            const data =
-                result.data || [];
-
-
-            /*
-             * PENTING:
-             *
-             * Backend mengirim:
-             *
-             * "time":"12:51"
-             *
-             * bukan:
-             *
-             * "hour":"12:51"
-             *
-             */
-
-            window.historyLabels =
-                data.map(
-                    item => item.time
-                );
-
-
-            /* =========================
-               WATT
-            ========================= */
-
-            dailyChart =
-                createLineChart(
-                    dailyChart,
-                    'dailyChart',
-                    'Rata-rata Daya (W)',
-                    data.map(
-                        item =>
-                            item.average_power
-                    ),
-                    'Daya (W)',
-                    '#3b82f6',
-                    'W'
-                );
-
-
-            /* =========================
-               TEGANGAN
-            ========================= */
-
-            voltageChart =
-                createLineChart(
-                    voltageChart,
-                    'voltageChart',
-                    'Rata-rata Tegangan (V)',
-                    data.map(
-                        item =>
-                            item.average_voltage
-                    ),
-                    'Tegangan (V)',
-                    '#22d3ee',
-                    'V'
-                );
-
-
-            /* =========================
-               ARUS
-            ========================= */
-
-            currentChart =
-                createLineChart(
-                    currentChart,
-                    'currentChart',
-                    'Rata-rata Arus (A)',
-                    data.map(
-                        item =>
-                            item.average_current
-                    ),
-                    'Arus (A)',
-                    '#f59e0b',
-                    'A'
-                );
-
-
-            /* =========================
-               ENERGI
-            ========================= */
-
-            energyChart =
-                createLineChart(
-                    energyChart,
-                    'energyChart',
-                    'Energi (kWh)',
-                    data.map(
-                        item =>
-                            item.average_energy
-                    ),
-                    'Energi (kWh)',
-                    '#22c55e',
-                    'kWh'
-                );
-
-
-            /* =========================
-               FREKUENSI
-            ========================= */
-
-            frequencyChart =
-                createLineChart(
-                    frequencyChart,
-                    'frequencyChart',
-                    'Rata-rata Frekuensi (Hz)',
-                    data.map(
-                        item =>
-                            item.average_frequency
-                    ),
-                    'Frekuensi (Hz)',
-                    '#a855f7',
-                    'Hz'
-                );
-
-
-            /* =========================
-               POWER FACTOR
-            ========================= */
-
-            powerFactorChart =
-                createLineChart(
-                    powerFactorChart,
-                    'powerFactorChart',
-                    'Rata-rata Power Factor',
-                    data.map(
-                        item =>
-                            item.average_power_factor
-                    ),
-                    'Power Factor',
-                    '#ef4444',
-                    ''
-                );
-
-
-            console.log(
-                `History berhasil dimuat: ${data.length} titik`
-            );
+            console.log(`History berhasil dimuat: ${historyData.length} titik untuk ${selectedHistoryDate}`);
 
         } catch (error) {
-
-            console.error(
-                'Gagal mengambil history:',
-                error
-            );
+            console.error('Gagal mengambil history:', error);
         }
+
     }
 
 
-    /* ========================================================
-       TODAY
-    ======================================================== */
+    function renderHistoryWindow() {
 
-    function setToday() {
+        const windowInfo =
+            HISTORY_WINDOWS[currentWindow];
 
-        const parts =
-            new Intl.DateTimeFormat(
-                'en-CA',
-                {
-                    timeZone: 'Asia/Jakarta',
-
-                    year: 'numeric',
-
-                    month: '2-digit',
-
-                    day: '2-digit'
-                }
-            ).formatToParts(
-                new Date()
+        const visibleData =
+            historyData.slice(
+                windowInfo.start,
+                windowInfo.end
             );
 
+        window.historyLabels =
+            visibleData.map(
+                item => item.time
+            );
 
-        const get =
-            type =>
-                parts.find(
-                    x => x.type === type
-                )?.value;
+        dailyChart =
+            createLineChart(
+                dailyChart,
+                'dailyChart',
+                'Rata-rata Daya (W)',
+                visibleData.map(
+                    item => item.average_power
+                ),
+                'Daya (W)',
+                '#3b82f6',
+                'W'
+            );
+
+        voltageChart =
+            createLineChart(
+                voltageChart,
+                'voltageChart',
+                'Rata-rata Tegangan (V)',
+                visibleData.map(
+                    item => item.average_voltage
+                ),
+                'Tegangan (V)',
+                '#22d3ee',
+                'V'
+            );
+
+        currentChart =
+            createLineChart(
+                currentChart,
+                'currentChart',
+                'Rata-rata Arus (A)',
+                visibleData.map(
+                    item => item.average_current
+                ),
+                'Arus (A)',
+                '#f59e0b',
+                'A'
+            );
+
+        frequencyChart =
+            createLineChart(
+                frequencyChart,
+                'frequencyChart',
+                'Rata-rata Frekuensi (Hz)',
+                visibleData.map(
+                    item => item.average_frequency
+                ),
+                'Frekuensi (Hz)',
+                '#a855f7',
+                'Hz'
+            );
+
+        updateHistoryNavigation();
+
+    }
 
 
-        document.getElementById(
-            'historyDate'
-        ).value =
-            `${get('year')}-${get('month')}-${get('day')}`;
+    function updateDateNavigation() {
+
+        const label = document.getElementById('historyDateLabel');
+        const prev = document.getElementById('prevDate');
+        const next = document.getElementById('nextDate');
+        const today = getJakartaDateKey();
+
+        if (label) label.textContent = formatHistoryDate(selectedHistoryDate);
+        if (prev) prev.disabled = false;
+        if (next) next.disabled = selectedHistoryDate >= today;
+    }
+
+
+    function updateHistoryNavigation() {
+
+        const label = document.getElementById('windowLabel');
+        const prev = document.getElementById('prevWindow');
+        const next = document.getElementById('nextWindow');
+        const activeWindow = getActiveWindowIndex();
+        const isLive = selectedHistoryDate === getJakartaDateKey() && currentWindow === activeWindow;
+
+        if (label) {
+            label.textContent = HISTORY_WINDOWS[currentWindow].label + (isLive ? ' • LIVE' : ' • RIWAYAT');
+            label.classList.toggle('live', isLive);
+        }
+
+        if (prev) prev.disabled = currentWindow === 0;
+        if (next) next.disabled = currentWindow >= activeWindow;
+
+        updateDateNavigation();
+    }
+
+
+    function changeHistoryDate(direction) {
+
+        const today = getJakartaDateKey();
+        const target = shiftDateKey(selectedHistoryDate, direction);
+
+        if (target > today) return;
+
+        selectedHistoryDate = target;
+
+        if (selectedHistoryDate === today) {
+            followingLive = true;
+            currentWindow = getActiveWindowIndex();
+        } else {
+            followingLive = false;
+            currentWindow = 3;
+        }
+
+        loadDailyHistory();
+    }
+
+
+    function changeHistoryWindow(direction) {
+
+        const activeWindow = getActiveWindowIndex();
+        const target = currentWindow + direction;
+
+        if (target < 0 || target > activeWindow) return;
+
+        currentWindow = target;
+        followingLive = selectedHistoryDate === getJakartaDateKey() && currentWindow === activeWindow;
+
+        if (historyData.length) renderHistoryWindow();
+        else updateHistoryNavigation();
     }
 
 
     /* ========================================================
+
        LIVE CLOCK
+
     ======================================================== */
+
 
     function updateLiveClock() {
 
+
     const el = document.getElementById('liveClock');
 
+
     if (!el) {
+
         return;
+
     }
+
 
     const now = new Date();
 
+
     const datePart =
+
         new Intl.DateTimeFormat('id-ID', {
+
             timeZone: 'Asia/Jakarta',
+
             weekday: 'long',
+
             day: '2-digit',
+
             month: 'long',
+
             year: 'numeric'
+
         }).format(now);
+
 
     const timePart =
+
         new Intl.DateTimeFormat('id-ID', {
+
             timeZone: 'Asia/Jakarta',
+
             hour: '2-digit',
+
             minute: '2-digit',
+
             second: '2-digit',
+
             hour12: false
+
         }).format(now);
 
+
     el.textContent =
+
         `${datePart} - ${timePart}`;
+
 }
 
+
     /* ========================================================
+
        AUTO REFRESH HISTORY
+
        SETIAP 1 MENIT
+
     ======================================================== */
+
 
     function startHistoryAutoRefresh() {
 
+
         /*
+
          * Hapus timer lama jika ada
+
          */
+
 
         if (historyRefreshTimer) {
 
+
             clearTimeout(
+
                 historyRefreshTimer
+
             );
+
         }
 
 
         /*
+
          * Hitung waktu menuju
+
          * pergantian menit berikutnya.
+
          *
+
          * Contoh:
+
          * 12:59:43
+
          * → refresh sekitar 13:00:00
+
          */
 
+
         const now =
+
             new Date();
 
 
         const delay =
+
             (
+
                 60 -
+
                 now.getSeconds()
+
             ) * 1000 -
+
             now.getMilliseconds();
 
 
         historyRefreshTimer =
+
             setTimeout(
+
                 async function() {
+
 
                     await loadDailyHistory();
 
 
                     /*
+
                      * Setelah refresh pertama,
+
                      * lanjut setiap 60 detik.
+
                      */
 
+
                     historyRefreshTimer =
+
                         setInterval(
+
                             loadDailyHistory,
+
                             60000
+
                         );
 
+
                 },
+
                 Math.max(
+
                     delay,
+
                     1000
+
                 )
+
             );
+
     }
 
 
     /* ========================================================
+
        INITIAL LOAD
+
     ======================================================== */
+
 
     updateLiveClock();
 
+
     setInterval(
+
         updateLiveClock,
+
         1000
+
     );
 
 
-    setToday();
 
 
     loadLatestData();
@@ -2655,41 +4847,80 @@
 
 
     /*
+
      * Data kartu tetap diperbarui
+
      * setiap 1 detik.
+
      */
 
+
     setInterval(
+
         loadLatestData,
+
         1000
+
     );
 
 
     /*
+
      * Grafik diperbarui
+
      * setiap pergantian menit.
+
      */
+
 
     startHistoryAutoRefresh();
 
 
-    /*
-     * Jika tanggal dipilih manual,
-     * langsung reload grafik.
-     */
-
     document.getElementById(
-        'historyDate'
+        'prevDate'
     ).addEventListener(
-        'change',
+        'click',
         function() {
-
-            loadDailyHistory();
+            changeHistoryDate(-1);
         }
     );
+
+    document.getElementById(
+        'nextDate'
+    ).addEventListener(
+        'click',
+        function() {
+            changeHistoryDate(1);
+        }
+    );
+
+    document.getElementById(
+        'prevWindow'
+    ).addEventListener(
+        'click',
+        function() {
+            changeHistoryWindow(-1);
+        }
+    );
+
+    document.getElementById(
+        'nextWindow'
+    ).addEventListener(
+        'click',
+        function() {
+            changeHistoryWindow(1);
+        }
+    );
+
+    selectedHistoryDate = getJakartaDateKey();
+    currentWindow = getActiveWindowIndex();
+    updateDateNavigation();
+    updateHistoryNavigation();
+
 
 </script>
 
 
 </body>
+
 </html>
