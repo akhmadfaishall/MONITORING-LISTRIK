@@ -3084,25 +3084,22 @@
             }
 
             .connection .live-clock {
-                grid-column: 1 / -1 !important;
-                grid-row: 2 !important;
-                width: 100% !important;
-                min-width: 0 !important;
-                max-width: 100% !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                gap: 4px !important;
-                font-size: 9px !important;
-                line-height: 1.3 !important;
-                font-weight: 600 !important;
-                text-align: center !important;
-                white-space: normal !important;
-                overflow: hidden !important;
-                overflow-wrap: anywhere !important;
-                word-break: normal !important;
-                font-variant-numeric: tabular-nums !important;
-            }
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    font-variant-numeric: tabular-nums !important;
+}
 
             .connection .live-clock #liveClock {
                 min-width: 0 !important;
