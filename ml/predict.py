@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import sys
 import warnings
@@ -7,6 +7,9 @@ import pandas as pd
 
 # Menyembunyikan pesan peringatan versi library
 warnings.filterwarnings('ignore')
+
+# Definisi zona waktu WIB (UTC+7)
+WIB = timezone(timedelta(hours=7))
 
 nama_model = 'model_listrik.pkl'
 
@@ -46,7 +49,7 @@ def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
         # Perkiraan waktu alarm berbunyi (saat sisa 5 kWh)
         kwh_sebelum_alarm = max(0.0, kwh_dapat - batas_alarm_kwh)
         hari_menuju_alarm = kwh_sebelum_alarm / kwh_laju_harian
-        waktu_alarm = datetime.now() + timedelta(days=hari_menuju_alarm)
+        waktu_alarm = datetime.now(WIB) + timedelta(days=hari_menuju_alarm)
         
         paket_token[f'Token_{nom}'] = {
             'nominal_rp': nom,
@@ -65,7 +68,7 @@ def prediksi(input_data=None):
 
     # Fallback jika tidak ada data kiriman dari Laravel
     if input_data is None:
-        sekarang = datetime.now()
+        sekarang = datetime.now(WIB)
         input_data = {
             "voltage": 220.0,
             "current": 1.8,
@@ -101,7 +104,7 @@ def prediksi(input_data=None):
 
     return {
         "status": "success",
-        "waktu_prediksi": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "waktu_prediksi": datetime.now(WIB).strftime("%Y-%m-%d %H:%M:%S"),
         "input_features": input_data,
         "prediksi_hari_ini_kwh": hasil_kwh_hari_ini,
         "rata_rata_harian_stabil_kwh": rata_rata_harian_stabil,
