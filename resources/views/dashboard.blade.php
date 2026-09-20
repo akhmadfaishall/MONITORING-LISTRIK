@@ -4495,36 +4495,36 @@
 
     ======================================================== */
 
-    (function () {
+    // (function () {
 
-        /* Matikan semua output console agar tidak membocorkan info */
-        var _noop = function () {};
-        console.log   = _noop;
-        console.warn  = _noop;
-        console.info  = _noop;
-        console.debug = _noop;
-        console.error = _noop;
-        console.table = _noop;
-        console.trace = _noop;
+    //     /* Matikan semua output console agar tidak membocorkan info */
+    //     var _noop = function () {};
+    //     console.log   = _noop;
+    //     console.warn  = _noop;
+    //     console.info  = _noop;
+    //     console.debug = _noop;
+    //     console.error = _noop;
+    //     console.table = _noop;
+    //     console.trace = _noop;
 
-        /* Nonaktifkan klik kanan */
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
+    //     /* Nonaktifkan klik kanan */
+    //     document.addEventListener('contextmenu', function (e) {
+    //         e.preventDefault();
+    //     });
 
-        /* Blokir shortcut keyboard yang umum dipakai membuka DevTools */
-        document.addEventListener('keydown', function (e) {
-            var blocked =
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                (e.ctrlKey && e.key === 'u') ||
-                (e.ctrlKey && e.key === 'U') ||
-                (e.ctrlKey && e.key === 's') ||
-                (e.ctrlKey && e.key === 'S');
-            if (blocked) { e.preventDefault(); }
-        });
+    //     /* Blokir shortcut keyboard yang umum dipakai membuka DevTools */
+    //     document.addEventListener('keydown', function (e) {
+    //         var blocked =
+    //             e.key === 'F12' ||
+    //             (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+    //             (e.ctrlKey && e.key === 'u') ||
+    //             (e.ctrlKey && e.key === 'U') ||
+    //             (e.ctrlKey && e.key === 's') ||
+    //             (e.ctrlKey && e.key === 'S');
+    //         if (blocked) { e.preventDefault(); }
+    //     });
 
-    })();
+    // })();
 
 
     /* ========================================================
