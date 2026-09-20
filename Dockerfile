@@ -21,5 +21,5 @@ COPY . .
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 RUN python3 -m pip install -r requirements.txt --break-system-packages
 
-EXPOSE 8000
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Gunakan shell form agar variabel $PORT dari Railway terbaca dengan benar
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
