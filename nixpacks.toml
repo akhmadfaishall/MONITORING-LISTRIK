@@ -1,0 +1,12 @@
+# nixpacks.toml
+
+# 1. Menambahkan Python & Pip ke lingkungan Nixpacks (tanpa menghapus PHP bawaan)
+[phases.setup]
+nixPkgs = ["...", "python311", "python311Packages.pip"]
+
+# 2. Perintah install untuk PHP (Composer) dan Python (Pip)
+[phases.install]
+cmds = [
+  "composer install --ignore-platform-reqs --no-dev --optimize-autoloader",
+  "python3 -m pip install -r requirements.txt"
+]
