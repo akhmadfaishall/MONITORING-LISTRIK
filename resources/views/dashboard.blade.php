@@ -3671,6 +3671,223 @@
             }
         }
 
+
+        /* =====================================================
+           AI PREDICTION SECTION
+        ===================================================== */
+
+        .ai-section {
+            margin-top: 28px;
+        }
+
+        .ai-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(168,85,247,.12);
+            border: 1px solid rgba(168,85,247,.25);
+            color: #c084fc;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .4px;
+        }
+
+        .ai-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #a855f7;
+            animation: onlinePulse 2s infinite;
+        }
+
+        .ai-section-title {
+            color: var(--pro-text);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .ai-section-subtitle {
+            color: #7f8da0;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        /* Kartu ringkasan atas (3 kartu: Konsumsi, Biaya, Waktu Prediksi) */
+        .ai-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .ai-summary-grid { grid-template-columns: 1fr; }
+        }
+
+        .ai-card {
+            background: #0d1621;
+            border: 1px solid var(--pro-border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 7px 22px rgba(0,0,0,.20);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .ai-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 9px 26px rgba(0,0,0,.28);
+        }
+
+        .ai-card-label {
+            color: #8291a4;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .45px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .ai-card-value {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ai-card-unit {
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 4px;
+            opacity: .7;
+        }
+
+        .ai-card-sub {
+            color: #7f8da0;
+            font-size: 10px;
+            margin-top: 6px;
+        }
+
+        .ai-card--kwh   { border-top: 2px solid #22d3ee; }
+        .ai-card--kwh .ai-card-value { color: #22d3ee; }
+
+        .ai-card--rp    { border-top: 2px solid #22c55e; }
+        .ai-card--rp .ai-card-value { color: #22c55e; }
+
+        .ai-card--time  { border-top: 2px solid #a855f7; }
+        .ai-card--time .ai-card-value { color: #a855f7; font-size: 15px; }
+
+        /* Panel tabel token */
+        .ai-token-panel {
+            background: linear-gradient(145deg, rgba(15,23,35,.98), rgba(10,17,27,.98));
+            border: 1px solid var(--pro-border);
+            border-radius: 16px;
+            padding: 21px;
+            box-shadow: 0 7px 22px rgba(0,0,0,.20);
+        }
+
+        .ai-token-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
+
+        .ai-token-table th {
+            color: #7f8da0;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 0 10px 10px 0;
+            border-bottom: 1px solid var(--pro-border);
+        }
+
+        .ai-token-table td {
+            padding: 11px 10px 11px 0;
+            font-size: 12px;
+            color: var(--pro-text);
+            border-bottom: 1px solid rgba(28,42,58,.6);
+            vertical-align: middle;
+        }
+
+        .ai-token-table tr:last-child td { border-bottom: none; }
+
+        .ai-token-table tr:hover td { background: rgba(255,255,255,.018); }
+
+        .ai-nominal-chip {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 6px;
+            background: rgba(47,129,247,.10);
+            border: 1px solid rgba(47,129,247,.20);
+            color: #60a5fa;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .ai-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-bar-bg {
+            flex: 1;
+            height: 5px;
+            border-radius: 99px;
+            background: rgba(255,255,255,.06);
+            overflow: hidden;
+        }
+
+        .ai-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #a855f7, #6366f1);
+            transition: width .6s ease;
+        }
+
+        .ai-pct {
+            font-size: 10px;
+            color: #a855f7;
+            font-weight: 700;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        .ai-alarm-time {
+            color: #f59e0b;
+            font-size: 11px;
+        }
+
+        .ai-loading {
+            color: #748398;
+            font-size: 12px;
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        .ai-error {
+            color: #fca5a5;
+            font-size: 12px;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        @media (max-width: 700px) {
+            .ai-token-table th:nth-child(4),
+            .ai-token-table td:nth-child(4) { display: none; }
+        }
+
 </style>
 
 
@@ -4182,6 +4399,74 @@
     </section>
 
 
+    <!-- ======================================================
+
+         AI PREDIKSI LISTRIK & ESTIMASI TOKEN PLN
+
+    ======================================================= -->
+
+    <section class="ai-section">
+
+        <!-- HEADER SECTION -->
+        <div class="ai-section-header">
+            <div class="ai-badge">
+                <span class="ai-badge-dot"></span>
+                AI PREDIKSI
+            </div>
+            <div>
+                <div class="ai-section-title">Prediksi Konsumsi & Estimasi Token PLN</div>
+                <div class="ai-section-subtitle">Dihitung otomatis oleh model Machine Learning berdasarkan pemakaian harian</div>
+            </div>
+        </div>
+
+        <!-- KARTU RINGKASAN ATAS -->
+        <div class="ai-summary-grid">
+
+            <div class="ai-card ai-card--kwh">
+                <div class="ai-card-label">Prediksi Konsumsi Hari Ini</div>
+                <div class="ai-card-value">
+                    <span id="aiKwhHariIni">—</span>
+                    <span class="ai-card-unit">kWh</span>
+                </div>
+                <div class="ai-card-sub" id="aiKwhStabil">Rata-rata stabil: — kWh/hari</div>
+            </div>
+
+            <div class="ai-card ai-card--rp">
+                <div class="ai-card-label">Estimasi Kebutuhan 1 Bulan</div>
+                <div class="ai-card-value">
+                    <span id="aiKwhBulanan">—</span>
+                    <span class="ai-card-unit">kWh</span>
+                </div>
+                <div class="ai-card-sub" id="aiBiayaBulanan">Estimasi biaya: Rp —</div>
+            </div>
+
+            <div class="ai-card ai-card--time">
+                <div class="ai-card-label">Waktu Prediksi</div>
+                <div class="ai-card-value" id="aiWaktuPrediksi">—</div>
+                <div class="ai-card-sub" id="aiSource">Sumber data: —</div>
+            </div>
+
+        </div>
+
+        <!-- PANEL TABEL SIMULASI TOKEN -->
+        <div class="ai-token-panel">
+
+            <div class="panel-header" style="margin-bottom:4px">
+                <div>
+                    <div class="panel-title">Simulasi Kecukupan Token Listrik PLN</div>
+                    <div class="panel-subtitle">Estimasi daya tahan dan persentase kebutuhan bulanan per nominal token</div>
+                </div>
+            </div>
+
+            <div id="aiTokenContent">
+                <div class="ai-loading">⟳ Memuat prediksi AI...</div>
+            </div>
+
+        </div>
+
+    </section>
+
+
 </main>
 
 
@@ -4202,6 +4487,44 @@
 
 
 <script>
+
+
+    /* ========================================================
+
+       SECURITY — Nonaktifkan DevTools shortcuts & console
+
+    ======================================================== */
+
+    (function () {
+
+        /* Matikan semua output console agar tidak membocorkan info */
+        var _noop = function () {};
+        console.log   = _noop;
+        console.warn  = _noop;
+        console.info  = _noop;
+        console.debug = _noop;
+        console.error = _noop;
+        console.table = _noop;
+        console.trace = _noop;
+
+        /* Nonaktifkan klik kanan */
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        /* Blokir shortcut keyboard yang umum dipakai membuka DevTools */
+        document.addEventListener('keydown', function (e) {
+            var blocked =
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u') ||
+                (e.ctrlKey && e.key === 'U') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'S');
+            if (blocked) { e.preventDefault(); }
+        });
+
+    })();
 
 
     /* ========================================================
@@ -5613,6 +5936,92 @@
     currentWindow = getActiveWindowIndex();
     updateDateNavigation();
     updateHistoryNavigation();
+
+
+    /* ========================================================
+
+       AI PREDICTION LOADER
+
+    ======================================================== */
+
+
+    async function loadPrediction() {
+
+        try {
+
+            const res = await fetch('/api/predict', { cache: 'no-store' });
+            const json = await res.json();
+
+            if (!json.success || !json.data) {
+                document.getElementById('aiTokenContent').innerHTML =
+                    '<div class="ai-error">⚠️ Gagal memuat prediksi AI.</div>';
+                return;
+            }
+
+            const d = json.data;
+
+            /* --- Kartu Ringkasan --- */
+            document.getElementById('aiKwhHariIni').textContent   = d.prediksi_hari_ini_kwh;
+            document.getElementById('aiKwhStabil').textContent    = `Rata-rata stabil: ${d.rata_rata_harian_stabil_kwh} kWh/hari`;
+            document.getElementById('aiKwhBulanan').textContent   = d.estimasi_kebutuhan_sebulan_kwh;
+            document.getElementById('aiBiayaBulanan').textContent =
+                `Estimasi biaya: Rp ${Number(d.estimasi_biaya_sebulan_rp).toLocaleString('id-ID')}`;
+            document.getElementById('aiWaktuPrediksi').textContent = d.waktu_prediksi;
+            document.getElementById('aiSource').textContent =
+                json.source === 'live_sensor' ? '📡 Data sensor langsung (ESP32)' : '📊 Data baseline 900 VA';
+
+            /* --- Tabel Token --- */
+            const tokens = d.estimasi_token;
+            let rows = '';
+
+            for (const key in tokens) {
+                const t = tokens[key];
+                const pct = Math.min(t.persen_kebutuhan_sebulan, 100);
+                const pctLabel = t.persen_kebutuhan_sebulan > 100
+                    ? `>${pct}%`
+                    : `${t.persen_kebutuhan_sebulan}%`;
+
+                rows += `
+                    <tr>
+                        <td><span class="ai-nominal-chip">Rp ${Number(t.nominal_rp).toLocaleString('id-ID')}</span></td>
+                        <td style="color:#22d3ee;font-weight:700">${t.kwh_didapat} kWh</td>
+                        <td style="font-weight:600">${t.daya_tahan}</td>
+                        <td>
+                            <div class="ai-bar-wrap">
+                                <div class="ai-bar-bg"><div class="ai-bar-fill" style="width:${pct}%"></div></div>
+                                <span class="ai-pct">${pctLabel}</span>
+                            </div>
+                        </td>
+                        <td><span class="ai-alarm-time">${t.perkiraan_alarm_bunyi}</span></td>
+                    </tr>`;
+            }
+
+            document.getElementById('aiTokenContent').innerHTML = `
+                <table class="ai-token-table">
+                    <thead>
+                        <tr>
+                            <th>Nominal</th>
+                            <th>kWh Didapat</th>
+                            <th>Daya Tahan</th>
+                            <th>Kebutuhan Bulanan</th>
+                            <th>Perkiraan Alarm</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+
+        } catch (err) {
+            document.getElementById('aiTokenContent').innerHTML =
+                '<div class="ai-error">⚠️ Koneksi ke API prediksi gagal.</div>';
+        }
+    }
+
+
+    /* Muat saat halaman pertama kali dibuka */
+    loadPrediction();
+
+    /* Perbarui prediksi setiap 5 menit */
+    setInterval(loadPrediction, 5 * 60 * 1000);
 
 
 </script>

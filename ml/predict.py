@@ -5,13 +5,12 @@ import warnings
 import joblib   
 import pandas as pd 
 
-# Menyembunyikan pesan peringatan versi library agar output bersih
+# Menyembunyikan pesan peringatan versi library
 warnings.filterwarnings('ignore')
 
 nama_model = 'model_listrik.pkl'
 
 def muat_model():
-    # Memuat model linear regression yang sudah dilatih
     try:
         model = joblib.load(nama_model)
         return model 
@@ -20,7 +19,6 @@ def muat_model():
         sys.exit(1)
 
 def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
-    # Menghitung daya tahan token, persentase kebutuhan sebulan, dan alarm
     tarif_per_kwh = 1352.00  # Tarif resmi PLN R-1/900 VA RTM (Rp / kWh)
     batas_alarm_kwh = 5.0    # Standar meteran PLN berbunyi saat tersisa 5 kWh
 
@@ -30,13 +28,22 @@ def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
     for nom in nominal_list:
         kwh_dapat = round(nom / tarif_per_kwh, 2)
 
-        # Daya tahan total berdasarkan rata-rata konsumsi harian bulanan
-        hari_tahan = round(kwh_dapat / kwh_laju_harian, 1)
+        # Daya tahan total (Format: X Hari Y Jam)
+        total_jam = int(round((kwh_dapat / kwh_laju_harian) * 24))
+        jml_hari = total_jam // 24
+        sisa_jam = total_jam % 24
 
-        # Berapa persen token ini mencukupi kebutuhan 1 bulan (30 hari)
+        if jml_hari > 0 and sisa_jam > 0:
+            daya_tahan_teks = f"{jml_hari} Hari {sisa_jam} Jam"
+        elif jml_hari > 0:
+            daya_tahan_teks = f"{jml_hari} Hari"
+        else:
+            daya_tahan_teks = f"{sisa_jam} Jam"
+
+        # Persentase kebutuhan bulanan (30 hari)
         persen_bulanan = round((kwh_dapat / total_kwh_bulanan) * 100, 1)
 
-        # Perkiraan kapan alarm berbunyi (sisa 5 kWh)
+        # Perkiraan waktu alarm berbunyi (saat sisa 5 kWh)
         kwh_sebelum_alarm = max(0.0, kwh_dapat - batas_alarm_kwh)
         hari_menuju_alarm = kwh_sebelum_alarm / kwh_laju_harian
         waktu_alarm = datetime.now() + timedelta(days=hari_menuju_alarm)
@@ -44,7 +51,7 @@ def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
         paket_token[f'Token_{nom}'] = {
             'nominal_rp': nom,
             'kwh_didapat': kwh_dapat,
-            'daya_tahan_hari': hari_tahan,
+            'daya_tahan': daya_tahan_teks,
             'persen_kebutuhan_sebulan': persen_bulanan,
             'perkiraan_alarm_bunyi': waktu_alarm.strftime(
                 "%A, %d %b %Y pukul %H:%M WIB"
@@ -56,7 +63,7 @@ def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
 def prediksi(input_data=None):
     model = muat_model()
 
-    # Sampel data realistis untuk uji coba
+    # Fallback jika tidak ada data kiriman dari Laravel
     if input_data is None:
         sekarang = datetime.now()
         input_data = {
@@ -81,11 +88,11 @@ def prediksi(input_data=None):
     hasil_kwh_hari_ini = float(model.predict(df_input)[0])
     hasil_kwh_hari_ini = max(0.5, round(hasil_kwh_hari_ini, 2))
 
-    # 2. Rata-rata konsumsi harian stabil (Moving Average 70% tren 7 hari + 30% hari ini)
+    # 2. Rata-rata konsumsi harian stabil (Moving Average 70% 7-hari + 30% hari ini)
     rolling_7d = input_data.get('rolling_mean_7d', hasil_kwh_hari_ini)
     rata_rata_harian_stabil = round((0.7 * rolling_7d) + (0.3 * hasil_kwh_hari_ini), 2)
 
-    # 3. Estimasi kebutuhan 1 bulan (30 hari) & estimasi biaya
+    # 3. Estimasi kebutuhan 1 bulan (30 hari) & estimasi biaya (tarif 900 VA)
     kebutuhan_sebulan_kwh = round(rata_rata_harian_stabil * 30, 1)
     estimasi_biaya_sebulan_rp = int(kebutuhan_sebulan_kwh * 1352.00)
 
@@ -105,7 +112,17 @@ def prediksi(input_data=None):
 
 if __name__ == '__main__':
     is_json = "--json" in sys.argv
-    hasil = prediksi()
+
+    # Membaca data kiriman dari Laravel jika ada
+    data_input = None
+    if "--data" in sys.argv:
+        try:
+            idx = sys.argv.index("--data") + 1
+            data_input = json.loads(sys.argv[idx])
+        except Exception as e:
+            print(f"Error membaca argumen --data: {e}", file=sys.stderr)
+
+    hasil = prediksi(data_input)
 
     if is_json:
         print(json.dumps(hasil))
@@ -123,7 +140,7 @@ if __name__ == '__main__':
         print("-" * 68)
         for key, val in hasil["estimasi_token"].items():
             print(f"• Token Rp {val['nominal_rp']:,} (~{val['kwh_didapat']} kWh):")
-            print(f"   ⏱️  Daya Tahan   : Bertahan ~{val['daya_tahan_hari']} Hari ({val['persen_kebutuhan_sebulan']}% kebutuhan sebulan)")
+            print(f"   ⏱️  Daya Tahan   : Bertahan ~{val['daya_tahan']} ({val['persen_kebutuhan_sebulan']}% kebutuhan sebulan)")
             print(f"   🔔  Alarm Bunyi  : Perkiraan {val['perkiraan_alarm_bunyi']}")
             print()
         print("=" * 68)
