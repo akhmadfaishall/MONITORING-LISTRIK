@@ -12,6 +12,9 @@ class PredictionController extends Controller
 {
     // Menjalankan model AI prediksi 
     public function predict(Request $request){
+        // Atur bahasa Carbon ke Indonesia untuk format tanggal alarm
+        Carbon::setLocale('id');
+
         // Ambil data terbaru dari MySQL
         $latest = ElectricalReading::orderBy('created_at', 'desc')->first();
 
@@ -100,7 +103,7 @@ class PredictionController extends Controller
         }
 
         // =========================================================================
-        // TAMBAHAN: HITUNG KWH_REAL DAN SUSUN RIWAYAT EVALUASI UNTUK CHART.JS
+        // HITUNG KWH_REAL DAN SUSUN RIWAYAT EVALUASI UNTUK CHART.JS
         // =========================================================================
         $riwayatEvaluasi = [];
     
@@ -138,7 +141,6 @@ class PredictionController extends Controller
                     ? (float) $result['prediksi_hari_ini_kwh'] 
                     : ($result['prediction'] ?? 0.0);
             } else {
-                // Ambil data historis prediksi atau simulasi berdasarkan riwayat
                 $kwhPrediksi = $kwhReal > 0 ? round($kwhReal * 1.02, 2) : 0.0;
             }
 
@@ -150,13 +152,68 @@ class PredictionController extends Controller
             ];
         }
 
-        // Sisipkan array riwayat_evaluasi ke dalam response data
+        // =========================================================================
+        // PERHITUNGAN SIMULASI TOKEN DINAMIS SESUAI DATA SENSOR / PREDIKSI REAL
+        // =========================================================================
+        $kwhPerHari = 4.2; // Fallback rata-rata kWh harian dasar
+
+        if (isset($result['prediksi_hari_ini_kwh']) && (float)$result['prediksi_hari_ini_kwh'] > 0) {
+            $kwhPerHari = (float)$result['prediksi_hari_ini_kwh'];
+        } elseif ($lag1Energy > 0) {
+            $kwhPerHari = $lag1Energy;
+        }
+
+        $tarifPerKwh = 605.00; // Tarif Dasar PLN (misal R1 900 VA Subsidi/Non-subsidi)
+        $nominals = [
+            '20k'   => 20000,
+            '50k'   => 50000,
+            '100k'  => 100000,
+            '200k'  => 200000,
+            '500k'  => 500000,
+            '1000k' => 1000000,
+        ];
+
+        $simulasiToken = [];
+
+        foreach ($nominals as $key => $nominal) {
+            $kwhDidapat = round($nominal / $tarifPerKwh, 2);
+            
+            // Hitung durasi daya tahan (Hari & Jam)
+            $totalHariFloat = $kwhDidapat / $kwhPerHari;
+            $hari = floor($totalHariFloat);
+            $jam = round(($totalHariFloat - $hari) * 24);
+
+            if ($jam >= 24) {
+                $hari += 1;
+                $jam = 0;
+            }
+
+            // Hitung persen kebutuhan sebulan (30 hari)
+            $kebutuhanBulananKwh = $kwhPerHari * 30;
+            $persenBulan = round(($kwhDidapat / $kebutuhanBulananKwh) * 100, 1);
+
+            // Hitung perkiraan tanggal alarm habis
+            $alarmDate = $now->copy()->addHours((int)round($totalHariFloat * 24));
+            $alarmFormatted = $alarmDate->translatedFormat('l, d M Y') . ' pukul ' . $alarmDate->format('H:i') . ' WIB';
+
+            $simulasiToken[$key] = [
+                'nominal_rp'               => $nominal,
+                'kwh_didapat'              => (string) $kwhDidapat,
+                'daya_tahan'               => "{$hari} Hari {$jam} Jam",
+                'persen_kebutuhan_sebulan' => $persenBulan,
+                'perkiraan_alarm_bunyi'    => $alarmFormatted
+            ];
+        }
+
+        // Sisipkan riwayat_evaluasi & simulasi_token ke dalam response data
         if (is_array($result)) {
             $result['riwayat_evaluasi'] = $riwayatEvaluasi;
+            $result['simulasi_token']   = $simulasiToken;
         } else {
             $result = [
                 'prediksi_hari_ini_kwh' => $result,
-                'riwayat_evaluasi'      => $riwayatEvaluasi
+                'riwayat_evaluasi'      => $riwayatEvaluasi,
+                'simulasi_token'        => $simulasiToken
             ];
         }
 
@@ -165,7 +222,5 @@ class PredictionController extends Controller
             'source'  => $latest ? 'live_sensor' : 'baseline_900VA',
             'data'    => $result
         ]);
-
-        
     }
 }
