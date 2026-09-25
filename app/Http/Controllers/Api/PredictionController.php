@@ -159,17 +159,22 @@ class PredictionController extends Controller
         }
 
         // =========================================================================
-        // PERHITUNGAN SIMULASI TOKEN DINAMIS SESUAI DATA SENSOR / PREDIKSI REAL
+        // HITUNG SIMULASI TOKEN DINAMIS BERDASARKAN ESTIMASI BULANAN
         // =========================================================================
-        $kwhPerHari = 4.2; // Fallback rata-rata kWh harian dasar
 
-        if (isset($result['prediksi_hari_ini_kwh']) && (float)$result['prediksi_hari_ini_kwh'] > 0) {
-            $kwhPerHari = (float)$result['prediksi_hari_ini_kwh'];
-        } elseif ($lag1Energy > 0) {
-            $kwhPerHari = $lag1Energy;
+        // 1. Ambil Estimasi Kebutuhan Bulanan (kWh) dari hasil AI (contoh: 211.5 kWh)
+        $estimasiBulananKwh = 211.5; // Fallback standar
+
+        if (isset($result['estimasi_kebutuhan_sebulan_kwh']) && (float)$result['estimasi_kebutuhan_sebulan_kwh'] > 0) {
+            $estimasiBulananKwh = (float)$result['estimasi_kebutuhan_sebulan_kwh'];
+        } elseif (isset($result['prediksi_hari_ini_kwh']) && (float)$result['prediksi_hari_ini_kwh'] > 0) {
+            $estimasiBulananKwh = (float)$result['prediksi_hari_ini_kwh'] * 30;
         }
 
-        $tarifPerKwh = 605.00; // Tarif Dasar PLN (misal R1 900 VA Subsidi/Non-subsidi)
+        // 2. Hitung laju pemakaian per hari (contoh: 211.5 / 30 = 7.05 kWh/hari)
+        $kwhPerHari = $estimasiBulananKwh / 30;
+
+        $tarifPerKwh = 605.00; // Tarif PLN per kWh (sesuaikan jika R1 900VA/1300VA)
         $nominals = [
             '20k'   => 20000,
             '50k'   => 50000,
@@ -184,7 +189,7 @@ class PredictionController extends Controller
         foreach ($nominals as $key => $nominal) {
             $kwhDidapat = round($nominal / $tarifPerKwh, 2);
             
-            // Hitung durasi daya tahan (Hari & Jam)
+            // Hitung daya tahan berdasarkan konsumsi harian ($kwhPerHari)
             $totalHariFloat = $kwhDidapat / $kwhPerHari;
             $hari = floor($totalHariFloat);
             $jam = round(($totalHariFloat - $hari) * 24);
@@ -194,11 +199,10 @@ class PredictionController extends Controller
                 $jam = 0;
             }
 
-            // Hitung persen kebutuhan sebulan (30 hari)
-            $kebutuhanBulananKwh = $kwhPerHari * 30;
-            $persenBulan = round(($kwhDidapat / $kebutuhanBulananKwh) * 100, 1);
+            // Persentase kecukupan langsung dibagikan terhadap Estimasi Bulanan (misal 211.5 kWh)
+            $persenBulan = round(($kwhDidapat / $estimasiBulananKwh) * 100, 1);
 
-            // Hitung perkiraan tanggal alarm habis
+            // Tanggal alarm berbunyi = Waktu Sekarang + total jam daya tahan
             $alarmDate = $now->copy()->addHours((int)round($totalHariFloat * 24));
             $alarmFormatted = $alarmDate->translatedFormat('l, d M Y') . ' pukul ' . $alarmDate->format('H:i') . ' WIB';
 

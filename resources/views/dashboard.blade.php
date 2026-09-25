@@ -6206,7 +6206,7 @@ function changeHistoryWindow(direction) {
 
     async function loadPrediction() {
 
-        // Sinkronkan dengan filter utama
+    // Sinkronkan dengan filter utama
     if (selectedHistoryDate) {
         predictDateObj = new Date(selectedHistoryDate);
     }
@@ -6215,132 +6215,164 @@ function changeHistoryWindow(direction) {
     const dateDisp = document.getElementById('dateDisplay');
     if (dateDisp) dateDisp.textContent = formatPredictDateHeader(predictDateObj);
     updatePeriodDisplay();
-        const btnNextD = document.getElementById('btnNextDate');
+    const btnNextD = document.getElementById('btnNextDate');
 
-        // 1. Update Teks Navigasi Tanggal
-        if (dateDisp) dateDisp.textContent = formatPredictDateHeader(predictDateObj);
+    // 1. Update Teks Navigasi Tanggal
+    if (dateDisp) dateDisp.textContent = formatPredictDateHeader(predictDateObj);
 
-        // 2. Kunci Tombol Panah Kanan jika sudah Hari Ini
-        if (btnNextD) {
-            const isTodayOrFuture = predictDateObj.toDateString() === TODAY_OBJ.toDateString() || predictDateObj > TODAY_OBJ;
-            btnNextD.disabled = isTodayOrFuture;
-            btnNextD.style.opacity = isTodayOrFuture ? "0.35" : "1";
-            btnNextD.style.cursor = isTodayOrFuture ? "not-allowed" : "pointer";
-        }
+    // 2. Kunci Tombol Panah Kanan jika sudah Hari Ini
+    if (btnNextD) {
+        const isTodayOrFuture = predictDateObj.toDateString() === TODAY_OBJ.toDateString() || predictDateObj > TODAY_OBJ;
+        btnNextD.disabled = isTodayOrFuture;
+        btnNextD.style.opacity = isTodayOrFuture ? "0.35" : "1";
+        btnNextD.style.cursor = isTodayOrFuture ? "not-allowed" : "pointer";
+    }
 
-        // 3. Generate Label Tanggal 7 Hari
-        const labels = get7DaysLabels(predictDateObj);
+    // 3. Generate Label Tanggal 7 Hari
+    const labels = get7DaysLabels(predictDateObj);
 
-        // Nilai Default / Dummy jika API belum siap
-        let kwhHariIni = "10.0";
-        let kwhStabil = "4.2";
-        let kwhBulanan = "126";
-        let biayaBulanan = "182.000";
-        let waktuPrediksi = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
-        let sourceData = "📡 Simulasi Data Baseline / ESP32";
+    // Nilai Default / Dummy jika API belum siap
+    let kwhHariIni = "10.0";
+    let kwhStabil = "4.2";
+    let kwhBulanan = "126";
+    let biayaBulanan = "182.000";
+    let waktuPrediksi = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
+    let sourceData = "📡 Simulasi Data Baseline / ESP32";
 
-        let dataPrediksi = [0, 0, 0, 0, 0, 0, 10];
-        let dataReal = [0, 0, 0, 0, 0, 0, 0.2];
+    let dataPrediksi = [0, 0, 0, 0, 0, 0, 10];
+    let dataReal = [0, 0, 0, 0, 0, 0, 0.2];
 
-        // Tambahkan deklarasi ini di dalam fungsi loadPrediction() sebelum try-catch / perulangan
-        let tokensData = {
-            "20k":   { nominal_rp: 20000,   kwh_didapat: "14.79",  daya_tahan: "2 Hari 5 Jam",   persen_kebutuhan_sebulan: 7.4,   perkiraan_alarm_bunyi: "Saturday, 26 Sep 2026 pukul 18:19 WIB" },
-            "50k":   { nominal_rp: 50000,   kwh_didapat: "36.98",  daya_tahan: "5 Hari 13 Jam",  persen_kebutuhan_sebulan: 18.4,  perkiraan_alarm_bunyi: "Wednesday, 30 Sep 2026 pukul 01:56 WIB" },
-            "100k":  { nominal_rp: 100000,  kwh_didapat: "73.96",  daya_tahan: "11 Hari 1 Jam",  persen_kebutuhan_sebulan: 36.9,  perkiraan_alarm_bunyi: "Monday, 05 Oct 2026 pukul 14:35 WIB" },
-            "200k":  { nominal_rp: 200000,  kwh_didapat: "147.93", daya_tahan: "22 Hari 3 Jam",  persen_kebutuhan_sebulan: 73.7,  perkiraan_alarm_bunyi: "Friday, 16 Oct 2026 pukul 15:57 WIB" },
-            "500k":  { nominal_rp: 500000,  kwh_didapat: "369.82", daya_tahan: "55 Hari 7 Jam",  persen_kebutuhan_sebulan: 184.8, perkiraan_alarm_bunyi: "Wednesday, 18 Nov 2026 pukul 19:58 WIB" },
-            "1000k": { nominal_rp: 1000000, kwh_didapat: "739.64", daya_tahan: "110 Hari 1 Jam", persen_kebutuhan_sebulan: 369.8, perkiraan_alarm_bunyi: "Wednesday, 13 Jan 2027 pukul 02:41 WIB" }
-        };
+    // Fallback awal tokensData
+    let tokensData = {
+        "20k":   { nominal_rp: 20000,   kwh_didapat: "14.79",  daya_tahan: "2 Hari 5 Jam",   persen_kebutuhan_sebulan: 7.4,   perkiraan_alarm_bunyi: "Saturday, 26 Sep 2026 pukul 18:19 WIB" },
+        "50k":   { nominal_rp: 50000,   kwh_didapat: "36.98",  daya_tahan: "5 Hari 13 Jam",  persen_kebutuhan_sebulan: 18.4,  perkiraan_alarm_bunyi: "Wednesday, 30 Sep 2026 pukul 01:56 WIB" },
+        "100k":  { nominal_rp: 100000,  kwh_didapat: "73.96",  daya_tahan: "11 Hari 1 Jam",  persen_kebutuhan_sebulan: 36.9,  perkiraan_alarm_bunyi: "Monday, 05 Oct 2026 pukul 14:35 WIB" },
+        "200k":  { nominal_rp: 200000,  kwh_didapat: "147.93", daya_tahan: "22 Hari 3 Jam",  persen_kebutuhan_sebulan: 73.7,  perkiraan_alarm_bunyi: "Friday, 16 Oct 2026 pukul 15:57 WIB" },
+        "500k":  { nominal_rp: 500000,  kwh_didapat: "369.82", daya_tahan: "55 Hari 7 Jam",  persen_kebutuhan_sebulan: 184.8, perkiraan_alarm_bunyi: "Wednesday, 18 Nov 2026 pukul 19:58 WIB" },
+        "1000k": { nominal_rp: 1000000, kwh_didapat: "739.64", daya_tahan: "110 Hari 1 Jam", persen_kebutuhan_sebulan: 369.8, perkiraan_alarm_bunyi: "Wednesday, 13 Jan 2027 pukul 02:41 WIB" }
+    };
 
-        try {
-            const formattedApiDate = predictDateObj.toISOString().split('T')[0];
-            const url = `/api/predict?date=${formattedApiDate}&days=7`;
-            const res = await fetch(url, { cache: 'no-store' });
+    try {
+        const formattedApiDate = predictDateObj.toISOString().split('T')[0];
+        const url = `/api/predict?date=${formattedApiDate}&days=7`;
+        const res = await fetch(url, { cache: 'no-store' });
 
-            if (res.ok) {
-                const json = await res.json();
-                if (json.success && json.data) {
-                    const d = json.data;
-                    
-                    // Timpa data jika dikirim oleh API
-                    if (d.prediksi_hari_ini_kwh !== undefined) kwhHariIni = d.prediksi_hari_ini_kwh;
-                    if (d.rata_rata_harian_stabil_kwh !== undefined) kwhStabil = d.rata_rata_harian_stabil_kwh;
-                    if (d.estimasi_kebutuhan_sebulan_kwh !== undefined) kwhBulanan = d.estimasi_kebutuhan_sebulan_kwh;
-                    if (d.estimasi_biaya_sebulan_rp !== undefined) {
-                        biayaBulanan = Number(d.estimasi_biaya_sebulan_rp).toLocaleString('id-ID');
-                    }
-                    if (d.waktu_prediksi) waktuPrediksi = d.waktu_prediksi;
-                    if (json.source) {
-                        sourceData = json.source === 'live_sensor' ? '📡 Data sensor langsung (ESP32)' : '📊 Data baseline 900 VA';
-                    }
+        if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) {
+                const d = json.data;
+                
+                // Timpa data ringkasan jika dikirim oleh API
+                if (d.prediksi_hari_ini_kwh !== undefined) kwhHariIni = d.prediksi_hari_ini_kwh;
+                if (d.rata_rata_harian_stabil_kwh !== undefined) kwhStabil = d.rata_rata_harian_stabil_kwh;
+                if (d.estimasi_kebutuhan_sebulan_kwh !== undefined) kwhBulanan = d.estimasi_kebutuhan_sebulan_kwh;
+                if (d.estimasi_biaya_sebulan_rp !== undefined) {
+                    biayaBulanan = Number(d.estimasi_biaya_sebulan_rp).toLocaleString('id-ID');
+                }
+                if (d.waktu_prediksi) waktuPrediksi = d.waktu_prediksi;
+                if (json.source) {
+                    sourceData = json.source === 'live_sensor' ? '📡 Data sensor langsung (ESP32)' : '📊 Data baseline 900 VA';
+                }
 
-                    if (d.riwayat_evaluasi && Array.isArray(d.riwayat_evaluasi) && d.riwayat_evaluasi.length > 0) {
-                        dataPrediksi = d.riwayat_evaluasi.map(item => Number(item.kwh_prediksi) || 0);
-                        dataReal = d.riwayat_evaluasi.map(item => Number(item.kwh_real) || 0);
-                    }
+                if (d.riwayat_evaluasi && Array.isArray(d.riwayat_evaluasi) && d.riwayat_evaluasi.length > 0) {
+                    dataPrediksi = d.riwayat_evaluasi.map(item => Number(item.kwh_prediksi) || 0);
+                    dataReal = d.riwayat_evaluasi.map(item => Number(item.kwh_real) || 0);
+                }
+
+                // AMBIL DATA TABEL DARI API ATAU HITUNG UTUH SETELAH KWH BULANAN TERUPDATE
+                if (d.simulasi_token) {
+                    tokensData = d.simulasi_token;
+                } else {
+                    const kwhBulananNum = parseFloat(kwhBulanan) || 211.5;
+                    const kwhHariIniNum = kwhBulananNum / 30;
+                    const tarif = 605.00; // Pastikan tarif PLN disesuaikan (misal 1352 atau 1444.70)
+
+                    const nominals = [20000, 50000, 100000, 200000, 500000, 1000000];
+                    const keys = ["20k", "50k", "100k", "200k", "500k", "1000k"];
+
+                    tokensData = {};
+                    nominals.forEach((nom, idx) => {
+                        const kwh = (nom / tarif).toFixed(2);
+                        const totalHari = kwh / kwhHariIniNum;
+                        const hari = Math.floor(totalHari);
+                        const jam = Math.round((totalHari - hari) * 24);
+                        const pct = ((kwh / kwhBulananNum) * 100).toFixed(1);
+
+                        const tglAlarm = new Date();
+                        tglAlarm.setHours(tglAlarm.getHours() + (totalHari * 24));
+
+                        tokensData[keys[idx]] = {
+                            nominal_rp: nom,
+                            kwh_didapat: kwh,
+                            daya_tahan: `${hari} Hari ${jam} Jam`,
+                            persen_kebutuhan_sebulan: parseFloat(pct),
+                            perkiraan_alarm_bunyi: tglAlarm.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }) + ' pukul ' + tglAlarm.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB'
+                        };
+                    });
                 }
             }
-        } catch (err) {
-            console.error("API belum mengembalikan data, menggunakan nilai fallback:", err);
+        }
+    } catch (err) {
+        console.error("API belum mengembalikan data, menggunakan nilai fallback:", err);
+    }
+
+    // 4. PASTI UPDATE KARTU RINGKASAN ATAS
+    const elHariIni = document.getElementById('aiKwhHariIni');
+    const elStabil = document.getElementById('aiKwhStabil');
+    const elBulanan = document.getElementById('aiKwhBulanan');
+    const elBiaya = document.getElementById('aiBiayaBulanan');
+    const elWaktu = document.getElementById('aiWaktuPrediksi');
+    const elSource = document.getElementById('aiSource');
+
+    if (elHariIni) elHariIni.textContent = kwhHariIni;
+    if (elStabil) elStabil.textContent = `Rata-rata stabil: ${kwhStabil} kWh/hari`;
+    if (elBulanan) elBulanan.textContent = kwhBulanan;
+    if (elBiaya) elBiaya.textContent = `Estimasi biaya: Rp ${biayaBulanan}`;
+    if (elWaktu) elWaktu.textContent = waktuPrediksi;
+    if (elSource) elSource.textContent = sourceData;
+
+    // 5. Render Grafik
+    createPredictionChart(labels, dataPrediksi, dataReal);
+
+    // 6. RENDER TABEL SIMULASI TOKEN
+    const tokenContainer = document.getElementById('aiTokenContent');
+    if (tokenContainer) {
+        let rows = '';
+        for (const key in tokensData) {
+            const t = tokensData[key];
+            const pctVal = Number(t.persen_kebutuhan_sebulan) || 0;
+            const barWidth = Math.min(pctVal, 100);
+            const pctLabel = pctVal > 100 ? `>${barWidth}%` : `${pctVal}%`;
+
+            rows += `
+                <tr>
+                    <td><span class="ai-nominal-chip">Rp ${Number(t.nominal_rp || 0).toLocaleString('id-ID')}</span></td>
+                    <td style="color:#22d3ee;font-weight:700">${t.kwh_didapat || 0} kWh</td>
+                    <td style="font-weight:600">${t.daya_tahan || '-'}</td>
+                    <td>
+                        <div class="ai-bar-wrap">
+                            <div class="ai-bar-bg"><div class="ai-bar-fill" style="width:${barWidth}%"></div></div>
+                            <span class="ai-pct">${pctLabel}</span>
+                        </div>
+                    </td>
+                    <td><span class="ai-alarm-time">${t.perkiraan_alarm_bunyi || '-'}</span></td>
+                </tr>`;
         }
 
-        // 4. PASTI UPDATE KARTU RINGKASAN ATAS
-        const elHariIni = document.getElementById('aiKwhHariIni');
-        const elStabil = document.getElementById('aiKwhStabil');
-        const elBulanan = document.getElementById('aiKwhBulanan');
-        const elBiaya = document.getElementById('aiBiayaBulanan');
-        const elWaktu = document.getElementById('aiWaktuPrediksi');
-        const elSource = document.getElementById('aiSource');
-
-        if (elHariIni) elHariIni.textContent = kwhHariIni;
-        if (elStabil) elStabil.textContent = `Rata-rata stabil: ${kwhStabil} kWh/hari`;
-        if (elBulanan) elBulanan.textContent = kwhBulanan;
-        if (elBiaya) elBiaya.textContent = `Estimasi biaya: Rp ${biayaBulanan}`;
-        if (elWaktu) elWaktu.textContent = waktuPrediksi;
-        if (elSource) elSource.textContent = sourceData;
-
-        // 5. Render Grafik
-        createPredictionChart(labels, dataPrediksi, dataReal);
-
-        // 6. RENDER TABEL SIMULASI TOKEN (Gunakan Data API atau Fallback Dummy)
-        const tokenContainer = document.getElementById('aiTokenContent');
-        if (tokenContainer) {
-            let rows = '';
-            for (const key in tokensData) {
-                const t = tokensData[key];
-                const pctVal = t.persen_kebutuhan_sebulan || 0;
-                const pct = Math.min(pctVal, 100);
-                const pctLabel = pctVal > 100 ? `>${pct}%` : `${pct}%`;
-
-                rows += `
+        tokenContainer.innerHTML = `
+            <table class="ai-token-table">
+                <thead>
                     <tr>
-                        <td><span class="ai-nominal-chip">Rp ${Number(t.nominal_rp || 0).toLocaleString('id-ID')}</span></td>
-                        <td style="color:#22d3ee;font-weight:700">${t.kwh_didapat || 0} kWh</td>
-                        <td style="font-weight:600">${t.daya_tahan || '-'}</td>
-                        <td>
-                            <div class="ai-bar-wrap">
-                                <div class="ai-bar-bg"><div class="ai-bar-fill" style="width:${pct}%"></div></div>
-                                <span class="ai-pct">${pctLabel}</span>
-                            </div>
-                        </td>
-                        <td><span class="ai-alarm-time">${t.perkiraan_alarm_bunyi || '-'}</span></td>
-                    </tr>`;
-            }
-
-            tokenContainer.innerHTML = `
-                <table class="ai-token-table">
-                    <thead>
-                        <tr>
-                            <th>Nominal</th>
-                            <th>kWh Didapat</th>
-                            <th>Daya Tahan</th>
-                            <th>Kebutuhan Bulanan</th>
-                            <th>Perkiraan Alarm</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>`;
-        }
+                        <th>Nominal</th>
+                        <th>kWh Didapat</th>
+                        <th>Daya Tahan</th>
+                        <th>Kebutuhan Bulanan</th>
+                        <th>Perkiraan Alarm</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+    }
 }
 
     loadPrediction();
