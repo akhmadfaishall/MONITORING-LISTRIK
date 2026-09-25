@@ -33,8 +33,11 @@ class PredictionController extends Controller
         $lag1Energy    = 7.5;
         $rollingMean7d = 8.0; 
 
-        $yesterday = $now->copy()->subDay()->toDateString();
-        $yesterdayReadings = ElectricalReading::whereDate('created_at', $yesterday);
+        // SCRIPT BARU (Presisi konversi WIB -> UTC):
+        $startYesterday = $now->copy()->subDay()->startOfDay()->setTimezone('UTC');
+        $endYesterday   = $now->copy()->subDay()->endOfDay()->setTimezone('UTC');
+
+        $yesterdayReadings = ElectricalReading::whereBetween('created_at', [$startYesterday, $endYesterday]);
         
         if($yesterdayReadings->count() > 0){
             $minEnergy = $yesterdayReadings->min('energy');
@@ -123,7 +126,10 @@ class PredictionController extends Controller
             $label   = $isToday ? 'Hari Ini' : $targetDate->format('d M');
 
             // 1. Hitung kwh_real
-            $readings = ElectricalReading::whereDate('created_at', $dateStr);
+            $startTarget = $targetDate->copy()->startOfDay()->setTimezone('UTC');
+            $endTarget   = $targetDate->copy()->endOfDay()->setTimezone('UTC');
+
+            $readings = ElectricalReading::whereBetween('created_at', [$startTarget, $endTarget]);
             $kwhReal = 0.0;
 
             if ($readings->count() > 0) {
