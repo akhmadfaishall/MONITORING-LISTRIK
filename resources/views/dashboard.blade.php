@@ -4491,8 +4491,6 @@
 
             </div>
 
-            <div class="token-box"><div class="token-label">ESTIMASI TOKEN LISTRIK</div><div class="token-value">Belum diatur</div><div class="token-note">Fitur token akan terhubung setelah konfigurasi token listrik dilakukan.</div></div>
-
         </div>
 
     </section>
