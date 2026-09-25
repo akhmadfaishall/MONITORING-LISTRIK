@@ -4605,9 +4605,9 @@
 
     ======================================================== */
 
-    (function () {
+    // (function () {
 
-        /* Matikan semua output console agar tidak membocorkan info */
+    //     /* Matikan semua output console agar tidak membocorkan info */
     //     var _noop = function () {};
     //     console.log   = _noop;
     //     console.warn  = _noop;
