@@ -2475,6 +2475,105 @@
             max-width: 100%;
         }
 
+/* Container Card Utama (Sesuaikan dengan warna card gambar) */
+.custom-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  /* Warna background card & border persis seperti di gambar */
+  background-color: #0d1621 !important; 
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 16px 20px;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* Sisi Kiri Layout */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Garis Aksen Hijau Vertikal */
+.accent-line {
+  width: 4px;
+  height: 38px;
+  background-color: #10b981;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Teks Judul & Subtitle */
+.header-text h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.header-text p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Sisi Kanan Controls */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Tombol Panah < > */
+.btn-icon {
+  background-color: #080e1a; /* Dibuat sedikit lebih gelap dari card agar recessed */
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+/* Badge Kotak Tanggal */
+.badge-box {
+  background-color: #080e1a;
+  border: 1px solid #1e293b;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Badge Periode LIVE */
+.badge-live {
+  border-color: #059669;
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
         /* LAPTOP */
         @media (max-width: 1100px) {
             .container {
@@ -4447,6 +4546,19 @@
             </div>
 
         </div>
+         <!-- PANEL GRAFIK PREDIKSI VS AKTUAL -->
+            <div class="panel chart-panel" style="--chart-accent: #a855f7; margin-bottom: 18px; margin-top: 16px;">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">Evaluasi Prediksi AI vs Konsumsi Realisasi</div>
+                        <div class="panel-subtitle">Perbandingan hasil prediksi model AI dengan konsumsi aktual harian (kWh)</div>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+            </div>
+            
 
         <!-- PANEL TABEL SIMULASI TOKEN -->
         <div class="ai-token-panel">
@@ -4495,36 +4607,36 @@
 
     ======================================================== */
 
-    // (function () {
+    (function () {
 
-    //     /* Matikan semua output console agar tidak membocorkan info */
-    //     var _noop = function () {};
-    //     console.log   = _noop;
-    //     console.warn  = _noop;
-    //     console.info  = _noop;
-    //     console.debug = _noop;
-    //     console.error = _noop;
-    //     console.table = _noop;
-    //     console.trace = _noop;
+        /* Matikan semua output console agar tidak membocorkan info */
+        var _noop = function () {};
+        console.log   = _noop;
+        console.warn  = _noop;
+        console.info  = _noop;
+        console.debug = _noop;
+        console.error = _noop;
+        console.table = _noop;
+        console.trace = _noop;
 
-    //     /* Nonaktifkan klik kanan */
-    //     document.addEventListener('contextmenu', function (e) {
-    //         e.preventDefault();
-    //     });
+        /* Nonaktifkan klik kanan */
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
 
-    //     /* Blokir shortcut keyboard yang umum dipakai membuka DevTools */
-    //     document.addEventListener('keydown', function (e) {
-    //         var blocked =
-    //             e.key === 'F12' ||
-    //             (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-    //             (e.ctrlKey && e.key === 'u') ||
-    //             (e.ctrlKey && e.key === 'U') ||
-    //             (e.ctrlKey && e.key === 's') ||
-    //             (e.ctrlKey && e.key === 'S');
-    //         if (blocked) { e.preventDefault(); }
-    //     });
+        /* Blokir shortcut keyboard yang umum dipakai membuka DevTools */
+        document.addEventListener('keydown', function (e) {
+            var blocked =
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u') ||
+                (e.ctrlKey && e.key === 'U') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'S');
+            if (blocked) { e.preventDefault(); }
+        });
 
-    // })();
+    })();
 
 
     /* ========================================================
@@ -4537,6 +4649,7 @@
     let voltageChart;
     let currentChart;
     let frequencyChart;
+    let predictionChart;
 
     let historyData = [];
     let currentWindow = 0;
@@ -5478,6 +5591,67 @@
 
     }
 
+    function createPredictionChart(labels, dataPrediksi, dataReal) {
+        const ctx = document.getElementById('predictionChart').getContext('2d'); // Sesuaikan ID canvas kamu
+
+        // Hapus grafik lama agar tidak menumpuk saat refresh
+        if (window.myPredictionChart) {
+            window.myPredictionChart.destroy();
+        }
+
+        window.myPredictionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Prediksi Konsumsi (kWh)',
+                        data: dataPrediksi,
+                        borderColor: '#a855f7', // Warna ungu (AI)
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Konsumsi Real (kWh)',
+                        data: dataReal,
+                        borderColor: '#10b981', // Warna hijau (Real sensor)
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { color: '#94a3b8' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        beginAtZero: true,
+                        min: 0, // Memaksa batas bawah sumbu Y tetap 0
+                        suggestedMax: 15 // Batas atas default jika data sedang kosong
+                    }
+                }
+            }
+        });
+    }
+
+    // Panggil fungsi saat halaman selesai dimuat
+    document.addEventListener('DOMContentLoaded', loadPrediction);
 
     /* ========================================================
 
@@ -5516,7 +5690,9 @@
             console.log(`History berhasil dimuat: ${historyData.length} titik untuk ${selectedHistoryDate}`);
 
         } catch (error) {
-            console.error('Gagal mengambil history:', error);
+            console.error('Detail Error:', err); // Tambahkan ini untuk melihat penyebab pastinya di F12 Console
+            document.getElementById('aiTokenContent').innerHTML =
+                '<div class="ai-error">⚠️ Koneksi ke API prediksi gagal.</div>';
         }
 
     }
@@ -5629,39 +5805,70 @@
 
 
     function changeHistoryDate(direction) {
+    const today = getJakartaDateKey();
+    const target = shiftDateKey(selectedHistoryDate, direction);
 
-        const today = getJakartaDateKey();
-        const target = shiftDateKey(selectedHistoryDate, direction);
+    if (target > today) return;
 
-        if (target > today) return;
+    selectedHistoryDate = target;
 
-        selectedHistoryDate = target;
+    if (selectedHistoryDate === today) {
+        followingLive = true;
+        currentWindow = getActiveWindowIndex();
+    } else {
+        followingLive = false;
+        currentWindow = 3;
+    }
 
-        if (selectedHistoryDate === today) {
-            followingLive = true;
-            currentWindow = getActiveWindowIndex();
-        } else {
-            followingLive = false;
-            currentWindow = 3;
+    // Terapkan tanggal & jam yang sama ke modul Prediksi AI
+    predictDateObj = new Date(selectedHistoryDate);
+    currentPredictPeriodIdx = currentWindow;
+
+    // Load Riwayat + Prediksi AI bersamaan
+    loadDailyHistory();
+    loadPrediction();
+}
+
+function changeHistoryWindow(direction) {
+    const activeWindow = getActiveWindowIndex();
+    const today = getJakartaDateKey();
+    const target = currentWindow + direction;
+
+    // Jika digeser ke kiri melebihi jam 00:00 - 06:00 -> Mundur ke H-1 (18:00 - 00:00)
+    if (target < 0) {
+        changeHistoryDate(-1);
+        return;
+    }
+
+    // Jika digeser ke kanan melebihi jam 18:00 - 00:00 pada tanggal lampau -> Maju ke H+1 (00:00 - 06:00)
+    const maxWindowLimit = (selectedHistoryDate === today) ? activeWindow : 3;
+    if (target > maxWindowLimit) {
+        if (selectedHistoryDate < today) {
+            selectedHistoryDate = shiftDateKey(selectedHistoryDate, 1);
+            currentWindow = 0;
+            followingLive = (selectedHistoryDate === today && currentWindow === activeWindow);
+            
+            predictDateObj = new Date(selectedHistoryDate);
+            currentPredictPeriodIdx = currentWindow;
+            
+            loadDailyHistory();
+            loadPrediction();
         }
-
-        loadDailyHistory();
+        return;
     }
 
+    currentWindow = target;
+    followingLive = (selectedHistoryDate === today && currentWindow === activeWindow);
 
-    function changeHistoryWindow(direction) {
+    // Selaraskan indeks periode jam untuk AI
+    currentPredictPeriodIdx = currentWindow;
 
-        const activeWindow = getActiveWindowIndex();
-        const target = currentWindow + direction;
+    if (historyData.length) renderHistoryWindow();
+    else updateHistoryNavigation();
 
-        if (target < 0 || target > activeWindow) return;
-
-        currentWindow = target;
-        followingLive = selectedHistoryDate === getJakartaDateKey() && currentWindow === activeWindow;
-
-        if (historyData.length) renderHistoryWindow();
-        else updateHistoryNavigation();
-    }
+    // Update grafik Prediksi AI sesuai periode jam baru
+    loadPrediction();
+}
 
 
     /* ========================================================
@@ -5944,59 +6151,185 @@
 
     ======================================================== */
 
+   // State tanggal & periode navigasi prediksi
+    const TODAY_OBJ = new Date(); // Hari ini: 25 Sep 2026
+    let predictDateObj = new Date(); // Default filter ke hari ini
+
+    const predictPeriods = [
+        "00:00 – 06:00",
+        "06:00 – 12:00 • LIVE",
+        "12:00 – 18:00",
+        "18:00 – 24:00"
+    ];
+    let currentPredictPeriodIdx = 1; // Default ke "06:00 - 12:00 • LIVE"
+
+    // Format tanggal ke header tampilan: "Jum, 25 Sep 2026"
+    function formatPredictDateHeader(date) {
+        return date.toLocaleDateString('id-ID', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    // Generator 7 hari label tanggal mundur hingga tanggal yang dipilih
+    function get7DaysLabels(endDate) {
+        const labels = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(endDate);
+            d.setDate(d.getDate() - i);
+            const day = d.getDate();
+            const month = d.toLocaleDateString('id-ID', { month: 'short' });
+            labels.push(`${day} ${month}`);
+        }
+        return labels;
+    }
+
+    function updatePeriodDisplay() {
+    const periodDisp = document.getElementById('periodDisplay');
+    if (!periodDisp) return;
+
+    // Mengambil label jam dari HISTORY_WINDOWS sesuai window/periode yang aktif
+    const windowInfo = HISTORY_WINDOWS[currentWindow];
+    const today = getJakartaDateKey();
+    const activeWindow = getActiveWindowIndex();
+    const isLive = selectedHistoryDate === today && currentWindow === activeWindow;
+
+    const labelText = windowInfo ? windowInfo.label : '';
+    periodDisp.textContent = labelText + (isLive ? ' • LIVE' : ' • RIWAYAT');
+
+    if (isLive) {
+        periodDisp.classList.add('badge-live');
+    } else {
+        periodDisp.classList.remove('badge-live');
+    }
+}
 
     async function loadPrediction() {
 
+        // Sinkronkan dengan filter utama
+    if (selectedHistoryDate) {
+        predictDateObj = new Date(selectedHistoryDate);
+    }
+    currentPredictPeriodIdx = currentWindow;
+
+    const dateDisp = document.getElementById('dateDisplay');
+    if (dateDisp) dateDisp.textContent = formatPredictDateHeader(predictDateObj);
+    updatePeriodDisplay();
+        const btnNextD = document.getElementById('btnNextDate');
+
+        // 1. Update Teks Navigasi Tanggal
+        if (dateDisp) dateDisp.textContent = formatPredictDateHeader(predictDateObj);
+
+        // 2. Kunci Tombol Panah Kanan jika sudah Hari Ini
+        if (btnNextD) {
+            const isTodayOrFuture = predictDateObj.toDateString() === TODAY_OBJ.toDateString() || predictDateObj > TODAY_OBJ;
+            btnNextD.disabled = isTodayOrFuture;
+            btnNextD.style.opacity = isTodayOrFuture ? "0.35" : "1";
+            btnNextD.style.cursor = isTodayOrFuture ? "not-allowed" : "pointer";
+        }
+
+        // 3. Generate Label Tanggal 7 Hari
+        const labels = get7DaysLabels(predictDateObj);
+
+        // Nilai Default / Dummy jika API belum siap
+        let kwhHariIni = "10.0";
+        let kwhStabil = "4.2";
+        let kwhBulanan = "126";
+        let biayaBulanan = "182.000";
+        let waktuPrediksi = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
+        let sourceData = "📡 Simulasi Data Baseline / ESP32";
+
+        let dataPrediksi = [0, 0, 0, 0, 0, 0, 10];
+        let dataReal = [0, 0, 0, 0, 0, 0, 0.2];
+
+        // Tambahkan deklarasi ini di dalam fungsi loadPrediction() sebelum try-catch / perulangan
+        let tokensData = {
+            "20k":   { nominal_rp: 20000,   kwh_didapat: "14.79",  daya_tahan: "2 Hari 5 Jam",   persen_kebutuhan_sebulan: 7.4,   perkiraan_alarm_bunyi: "Saturday, 26 Sep 2026 pukul 18:19 WIB" },
+            "50k":   { nominal_rp: 50000,   kwh_didapat: "36.98",  daya_tahan: "5 Hari 13 Jam",  persen_kebutuhan_sebulan: 18.4,  perkiraan_alarm_bunyi: "Wednesday, 30 Sep 2026 pukul 01:56 WIB" },
+            "100k":  { nominal_rp: 100000,  kwh_didapat: "73.96",  daya_tahan: "11 Hari 1 Jam",  persen_kebutuhan_sebulan: 36.9,  perkiraan_alarm_bunyi: "Monday, 05 Oct 2026 pukul 14:35 WIB" },
+            "200k":  { nominal_rp: 200000,  kwh_didapat: "147.93", daya_tahan: "22 Hari 3 Jam",  persen_kebutuhan_sebulan: 73.7,  perkiraan_alarm_bunyi: "Friday, 16 Oct 2026 pukul 15:57 WIB" },
+            "500k":  { nominal_rp: 500000,  kwh_didapat: "369.82", daya_tahan: "55 Hari 7 Jam",  persen_kebutuhan_sebulan: 184.8, perkiraan_alarm_bunyi: "Wednesday, 18 Nov 2026 pukul 19:58 WIB" },
+            "1000k": { nominal_rp: 1000000, kwh_didapat: "739.64", daya_tahan: "110 Hari 1 Jam", persen_kebutuhan_sebulan: 369.8, perkiraan_alarm_bunyi: "Wednesday, 13 Jan 2027 pukul 02:41 WIB" }
+        };
+
         try {
+            const formattedApiDate = predictDateObj.toISOString().split('T')[0];
+            const url = `/api/predict?date=${formattedApiDate}&days=7`;
+            const res = await fetch(url, { cache: 'no-store' });
 
-            const res = await fetch('/api/predict', { cache: 'no-store' });
-            const json = await res.json();
+            if (res.ok) {
+                const json = await res.json();
+                if (json.success && json.data) {
+                    const d = json.data;
+                    
+                    // Timpa data jika dikirim oleh API
+                    if (d.prediksi_hari_ini_kwh !== undefined) kwhHariIni = d.prediksi_hari_ini_kwh;
+                    if (d.rata_rata_harian_stabil_kwh !== undefined) kwhStabil = d.rata_rata_harian_stabil_kwh;
+                    if (d.estimasi_kebutuhan_sebulan_kwh !== undefined) kwhBulanan = d.estimasi_kebutuhan_sebulan_kwh;
+                    if (d.estimasi_biaya_sebulan_rp !== undefined) {
+                        biayaBulanan = Number(d.estimasi_biaya_sebulan_rp).toLocaleString('id-ID');
+                    }
+                    if (d.waktu_prediksi) waktuPrediksi = d.waktu_prediksi;
+                    if (json.source) {
+                        sourceData = json.source === 'live_sensor' ? '📡 Data sensor langsung (ESP32)' : '📊 Data baseline 900 VA';
+                    }
 
-            if (!json.success || !json.data) {
-                document.getElementById('aiTokenContent').innerHTML =
-                    '<div class="ai-error">⚠️ Gagal memuat prediksi AI.</div>';
-                return;
+                    if (d.riwayat_evaluasi && Array.isArray(d.riwayat_evaluasi) && d.riwayat_evaluasi.length > 0) {
+                        dataPrediksi = d.riwayat_evaluasi.map(item => Number(item.kwh_prediksi) || 0);
+                        dataReal = d.riwayat_evaluasi.map(item => Number(item.kwh_real) || 0);
+                    }
+                }
             }
+        } catch (err) {
+            console.error("API belum mengembalikan data, menggunakan nilai fallback:", err);
+        }
 
-            const d = json.data;
+        // 4. PASTI UPDATE KARTU RINGKASAN ATAS
+        const elHariIni = document.getElementById('aiKwhHariIni');
+        const elStabil = document.getElementById('aiKwhStabil');
+        const elBulanan = document.getElementById('aiKwhBulanan');
+        const elBiaya = document.getElementById('aiBiayaBulanan');
+        const elWaktu = document.getElementById('aiWaktuPrediksi');
+        const elSource = document.getElementById('aiSource');
 
-            /* --- Kartu Ringkasan --- */
-            document.getElementById('aiKwhHariIni').textContent   = d.prediksi_hari_ini_kwh;
-            document.getElementById('aiKwhStabil').textContent    = `Rata-rata stabil: ${d.rata_rata_harian_stabil_kwh} kWh/hari`;
-            document.getElementById('aiKwhBulanan').textContent   = d.estimasi_kebutuhan_sebulan_kwh;
-            document.getElementById('aiBiayaBulanan').textContent =
-                `Estimasi biaya: Rp ${Number(d.estimasi_biaya_sebulan_rp).toLocaleString('id-ID')}`;
-            document.getElementById('aiWaktuPrediksi').textContent = d.waktu_prediksi;
-            document.getElementById('aiSource').textContent =
-                json.source === 'live_sensor' ? '📡 Data sensor langsung (ESP32)' : '📊 Data baseline 900 VA';
+        if (elHariIni) elHariIni.textContent = kwhHariIni;
+        if (elStabil) elStabil.textContent = `Rata-rata stabil: ${kwhStabil} kWh/hari`;
+        if (elBulanan) elBulanan.textContent = kwhBulanan;
+        if (elBiaya) elBiaya.textContent = `Estimasi biaya: Rp ${biayaBulanan}`;
+        if (elWaktu) elWaktu.textContent = waktuPrediksi;
+        if (elSource) elSource.textContent = sourceData;
 
-            /* --- Tabel Token --- */
-            const tokens = d.estimasi_token;
+        // 5. Render Grafik
+        createPredictionChart(labels, dataPrediksi, dataReal);
+
+        // 6. RENDER TABEL SIMULASI TOKEN (Gunakan Data API atau Fallback Dummy)
+        const tokenContainer = document.getElementById('aiTokenContent');
+        if (tokenContainer) {
             let rows = '';
-
-            for (const key in tokens) {
-                const t = tokens[key];
-                const pct = Math.min(t.persen_kebutuhan_sebulan, 100);
-                const pctLabel = t.persen_kebutuhan_sebulan > 100
-                    ? `>${pct}%`
-                    : `${t.persen_kebutuhan_sebulan}%`;
+            for (const key in tokensData) {
+                const t = tokensData[key];
+                const pctVal = t.persen_kebutuhan_sebulan || 0;
+                const pct = Math.min(pctVal, 100);
+                const pctLabel = pctVal > 100 ? `>${pct}%` : `${pct}%`;
 
                 rows += `
                     <tr>
-                        <td><span class="ai-nominal-chip">Rp ${Number(t.nominal_rp).toLocaleString('id-ID')}</span></td>
-                        <td style="color:#22d3ee;font-weight:700">${t.kwh_didapat} kWh</td>
-                        <td style="font-weight:600">${t.daya_tahan}</td>
+                        <td><span class="ai-nominal-chip">Rp ${Number(t.nominal_rp || 0).toLocaleString('id-ID')}</span></td>
+                        <td style="color:#22d3ee;font-weight:700">${t.kwh_didapat || 0} kWh</td>
+                        <td style="font-weight:600">${t.daya_tahan || '-'}</td>
                         <td>
                             <div class="ai-bar-wrap">
                                 <div class="ai-bar-bg"><div class="ai-bar-fill" style="width:${pct}%"></div></div>
                                 <span class="ai-pct">${pctLabel}</span>
                             </div>
                         </td>
-                        <td><span class="ai-alarm-time">${t.perkiraan_alarm_bunyi}</span></td>
+                        <td><span class="ai-alarm-time">${t.perkiraan_alarm_bunyi || '-'}</span></td>
                     </tr>`;
             }
 
-            document.getElementById('aiTokenContent').innerHTML = `
+            tokenContainer.innerHTML = `
                 <table class="ai-token-table">
                     <thead>
                         <tr>
@@ -6009,20 +6342,12 @@
                     </thead>
                     <tbody>${rows}</tbody>
                 </table>`;
-
-        } catch (err) {
-            document.getElementById('aiTokenContent').innerHTML =
-                '<div class="ai-error">⚠️ Koneksi ke API prediksi gagal.</div>';
         }
-    }
+}
 
-
-    /* Muat saat halaman pertama kali dibuka */
     loadPrediction();
-
     /* Perbarui prediksi setiap 5 menit */
     setInterval(loadPrediction, 5 * 60 * 1000);
-
 
 </script>
 

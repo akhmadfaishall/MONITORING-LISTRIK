@@ -22,7 +22,7 @@ def muat_model():
         sys.exit(1)
 
 def hitung_estimasi(kwh_laju_harian, total_kwh_bulanan):
-    tarif_per_kwh = 1352.00  # Tarif resmi PLN R-1/900 VA RTM (Rp / kWh)
+    tarif_per_kwh = 605.00  # Tarif resmi PLN R-1/900 VA RTM (Rp / kWh)
     batas_alarm_kwh = 5.0    # Standar meteran PLN berbunyi saat tersisa 5 kWh
 
     nominal_list = [20000, 50000, 100000, 200000, 500000, 1000000]
@@ -97,7 +97,7 @@ def prediksi(input_data=None):
 
     # 3. Estimasi kebutuhan 1 bulan (30 hari) & estimasi biaya (tarif 900 VA)
     kebutuhan_sebulan_kwh = round(rata_rata_harian_stabil * 30, 1)
-    estimasi_biaya_sebulan_rp = int(kebutuhan_sebulan_kwh * 1352.00)
+    estimasi_biaya_sebulan_rp = int(kebutuhan_sebulan_kwh * 605.00)
 
     # 4. Hitung simulasi token
     estimasi_token = hitung_estimasi(rata_rata_harian_stabil, kebutuhan_sebulan_kwh)
