@@ -22,7 +22,7 @@
 #define PIN_DHT         4    // Pin Data untuk Sensor Suhu/Kelembaban DHT22
 #define DHTTYPE         DHT22
 #define PIN_RELAY_LED   2    // Pin Output untuk Lampu / Relay LED
-#define PIN_BUZZER      18   // Pin Output untuk Alarm Buzzer
+#define PIN_BUZZER      19   // Pin Output untuk Alarm Buzzer (DIPERBAIKI)
 
 // Batas aman kadar gas (ADC 0 - 4095). Baseline udara normal: 400-750. Jika >= 1000, alarm berbunyi lokal otomatis
 #define GAS_THRESHOLD   1000
@@ -48,8 +48,38 @@ bool stateRelay       = false; // false = OFF, true = ON
 bool stateBuzzer      = false; // false = OFF, true = ON (kontrol manual)
 bool isGasDangerLocal = false; // Status bahaya gas lokal
 
+// ===== FITUR SNOOZE BUZZER 15 MENIT =====
+const unsigned long SNOOZE_DURATION = 15UL * 60UL * 1000UL; // 15 menit (dalam milidetik)
+unsigned long snoozeStartTime       = 0;
+bool isBuzzerSnoozed                = false;
+
 unsigned long lastSend = 0;
 const unsigned long intervalSend = 3000; // Kirim data telemetri tiap 3 detik
+
+// ===== PERBAIKAN: FUNGSI KONTROL BUZZER DENGAN TONE =====
+// Menggunakan frekuensi 1000 Hz sesuai hasil pengujian buzzer.
+const int BUZZER_FREQUENCY = 1000;
+
+// Menyimpan kondisi fisik buzzer agar tone() tidak terus diulang.
+bool buzzerPhysicalOn = false;
+
+void setBuzzer(bool on) {
+
+  // Tidak perlu mengulang perintah jika status tidak berubah.
+  if (on == buzzerPhysicalOn) {
+    return;
+  }
+
+  if (on) {
+    tone(PIN_BUZZER, BUZZER_FREQUENCY);
+    Serial.println("[BUZZER] Berbunyi 1000 Hz");
+  } else {
+    noTone(PIN_BUZZER);
+    Serial.println("[BUZZER] Berhenti berbunyi");
+  }
+
+  buzzerPhysicalOn = on;
+}
 
 // ===== FUNGSI MENGIRIM KONFIRMASI STATUS (FEEDBACK) KE MQTT =====
 void sendFeedback(String device, String state) {
@@ -80,10 +110,27 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  String target = doc["target"] | doc["device"] | "";
-  String action = doc["action"] | doc["state"] | "";
+  // Ambil target dan action dengan aman dari payload JSON
+  String target = "";
+  if (doc.containsKey("target")) {
+    target = doc["target"].as<String>();
+  } else if (doc.containsKey("device")) {
+    target = doc["device"].as<String>();
+  }
+
+  String action = "";
+  if (doc.containsKey("action")) {
+    action = doc["action"].as<String>();
+  } else if (doc.containsKey("state")) {
+    action = doc["state"].as<String>();
+  }
+
   target.toLowerCase();
+  target.trim();
   action.toUpperCase();
+  action.trim();
+
+  Serial.printf("[DEBUG PARSING] Target: '%s' | Action: '%s'\n", target.c_str(), action.c_str());
 
   // A. KONTROL LAMPU / RELAY LED
   if (target == "relay_led" || target == "lampu" || target == "led") {
@@ -93,13 +140,36 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     sendFeedback("relay_led", stateRelay ? "ON" : "OFF");
   }
 
-  // B. KONTROL MANUAL ALARM BUZZER
+  // B. KONTROL MANUAL ALARM BUZZER DENGAN FITUR SNOOZE 15 MENIT
   else if (target == "buzzer" || target == "alarm") {
-    stateBuzzer = (action == "ON");
-    // Bunyikan buzzer jika dinyalakan manual atau sedang dalam bahaya gas
-    digitalWrite(PIN_BUZZER, (stateBuzzer || isGasDangerLocal) ? HIGH : LOW);
-    Serial.println("[EKSEKUSI] Status Buzzer sekarang: " + String(stateBuzzer ? "ON" : "OFF"));
-    sendFeedback("buzzer", stateBuzzer ? "ON" : "OFF");
+    if (action == "ON") {
+      stateBuzzer = true;
+      isBuzzerSnoozed = false; // Batalkan snooze jika pengguna sengaja membunyikan manual
+
+      // PERBAIKAN: Gunakan tone() melalui setBuzzer()
+      setBuzzer(true);
+
+      Serial.println("[EKSEKUSI] Status Buzzer sekarang: ON (Manual)");
+      sendFeedback("buzzer", "ON");
+
+    } else if (action == "OFF") {
+      stateBuzzer = false;
+
+      // Jika saat ini sedang terdeteksi bahaya gas, aktifkan mode SNOOZE 15 Menit!
+      if (isGasDangerLocal) {
+        isBuzzerSnoozed = true;
+        snoozeStartTime = millis();
+        Serial.println("[SNOOZE] Buzzer dimatikan oleh user saat gas tinggi! Mode hening aktif selama 15 menit.");
+      } else {
+        isBuzzerSnoozed = false;
+      }
+
+      // PERBAIKAN: Gunakan noTone() melalui setBuzzer()
+      setBuzzer(false);
+
+      Serial.println("[EKSEKUSI] Status Buzzer sekarang: OFF");
+      sendFeedback("buzzer", "OFF");
+    }
   }
 }
 
@@ -179,17 +249,29 @@ void loop() {
     }
   }
 
-  // ===== 1. LOCAL SAFETY LOGIC (KEAMANAN MANDIRI TANPA INTERNET) =====
+  // ===== 1. LOCAL SAFETY LOGIC & SNOOZE 15 MENIT =====
   int gasRaw = analogRead(PIN_MQ2);
   isGasDangerLocal = (gasRaw > GAS_THRESHOLD);
 
-  if (isGasDangerLocal) {
-    // Gas bocor: langsung bunyikan buzzer secara lokal seketika!
-    digitalWrite(PIN_BUZZER, HIGH);
-  } else if (!stateBuzzer) {
-    // Jika tidak bahaya dan buzzer tidak dinyalakan manual lewat web/suara, matikan
-    digitalWrite(PIN_BUZZER, LOW);
+  // A. Periksa apakah masa hening (Snooze 15 menit) sudah kedaluwarsa
+  if (isBuzzerSnoozed) {
+    if (millis() - snoozeStartTime >= SNOOZE_DURATION) {
+      isBuzzerSnoozed = false; // Masa snooze 15 menit habis!
+      Serial.println("[SNOOZE BERAKHIR] 15 menit telah lewat. Jika gas masih tinggi, buzzer akan berbunyi lagi!");
+    }
   }
+
+  // B. Jika kadar gas sudah kembali turun normal (< 1000), reset status snooze otomatis
+  if (!isGasDangerLocal) {
+    isBuzzerSnoozed = false;
+  }
+
+  // C. Logika Bunyi Buzzer:
+  // Berbunyi jika: (Dinyalakan manual) ATAU (Gas bahaya DAN TIDAK sedang di-snooze)
+  bool shouldBuzzerSound = stateBuzzer || (isGasDangerLocal && !isBuzzerSnoozed);
+
+  // PERBAIKAN: Kontrol buzzer menggunakan tone() / noTone()
+  setBuzzer(shouldBuzzerSound);
 
   // ===== 2. KIRIM TELEMETRI KE CLOUD TIAP 3 DETIK =====
   unsigned long now = millis();
@@ -202,10 +284,13 @@ void loop() {
     if (isnan(temp)) temp = 28.5; // Nilai fallback jika DHT22 baru menyala
     if (isnan(hum))  hum  = 65.0;
 
-    Serial.printf("[SENSOR] Gas: %d ppm (%s) | Suhu: %.1f C | Hum: %.1f%% | Relay: %s | Buzzer: %s\n",
-                  gasRaw, isGasDangerLocal ? "BAHAYA" : "AMAN", temp, hum,
+    Serial.printf("[SENSOR] Gas: %d ppm (%s%s) | Suhu: %.1f C | Hum: %.1f%% | Relay: %s | Buzzer: %s\n",
+                  gasRaw,
+                  isGasDangerLocal ? "BAHAYA" : "AMAN",
+                  isBuzzerSnoozed ? " [SNOOZE 15m]" : "",
+                  temp, hum,
                   stateRelay ? "ON" : "OFF",
-                  (stateBuzzer || isGasDangerLocal) ? "ON" : "OFF");
+                  shouldBuzzerSound ? "ON" : "OFF");
 
     // Format Payload Telemetri untuk Laravel & Dashboard
     StaticJsonDocument<256> doc;
@@ -214,7 +299,7 @@ void loop() {
     doc["temperature"] = temp;
     doc["humidity"]    = hum;
     doc["gas_danger"]  = isGasDangerLocal;
-    doc["buzzer"]      = (stateBuzzer || isGasDangerLocal) ? "ON" : "OFF";
+    doc["buzzer"]      = shouldBuzzerSound ? "ON" : "OFF";
     doc["relay_led"]   = stateRelay ? "ON" : "OFF";
 
     char buffer[256];
@@ -226,4 +311,3 @@ void loop() {
     }
   }
 }
-
