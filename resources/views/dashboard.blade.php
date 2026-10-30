@@ -6886,7 +6886,7 @@ function changeHistoryWindow(direction) {
     /* =========================================================
        JARVIS VOICE AI AGENT INTEGRATION (N8N + SPEECH API)
        ========================================================= */
-    const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/344bba5a-b6bd-4e22-b512-0b74b37d442d";
+    const N8N_WEBHOOK_URL = "https://n8n-production-7e40.up.railway.app/webhook/344bba5a-b6bd-4e22-b512-0b74b37d442d";
 
     const bootScreen = document.getElementById('boot-screen');
     const aiResponse = document.getElementById('ai-response');

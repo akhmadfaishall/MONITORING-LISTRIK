@@ -10,6 +10,7 @@ Server ini menyediakan Tools untuk AI Agent (n8n / LLM) berbasis protokol MCP:
 =============================================================================
 """
 
+import os
 import sys
 import json
 import requests
@@ -18,7 +19,8 @@ from fastmcp import FastMCP
 # Inisialisasi Server MCP
 mcp = FastMCP("JarvisElectricalSafetyMCP")
 
-LARAVEL_BASE_URL = "http://127.0.0.1:8000"
+# Menggunakan Environment Variable jika ada (untuk deployment Cloud Railway), fallback ke localhost
+LARAVEL_BASE_URL = os.environ.get("LARAVEL_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 
 
 @mcp.tool()
@@ -128,10 +130,12 @@ def get_prediksi_token_pln() -> str:
 
 if __name__ == "__main__":
     # Jalankan server MCP
-    # Jika dijalankan dengan flag --sse, akan membuka server HTTP SSE di port 8001
+    # Jika dijalankan dengan flag --sse, akan membuka server HTTP SSE
     if "--sse" in sys.argv:
-        print("[JARVIS MCP] Menjalankan server dalam mode SSE di http://127.0.0.1:8001/sse ...", file=sys.stderr)
-        mcp.run(transport="sse", host="127.0.0.1", port=8001)
+        port = int(os.environ.get("PORT", 8001))
+        host = os.environ.get("HOST", "0.0.0.0")
+        print(f"[JARVIS MCP] Menjalankan server SSE di http://{host}:{port}/sse ...", file=sys.stderr)
+        mcp.run(transport="sse", host=host, port=port)
     else:
         # Default: mode stdio untuk integrasi langsung
         mcp.run(transport="stdio")
