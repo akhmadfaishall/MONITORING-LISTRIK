@@ -20,7 +20,11 @@ from fastmcp import FastMCP
 mcp = FastMCP("JarvisElectricalSafetyMCP")
 
 # Menggunakan Environment Variable jika ada (untuk deployment Cloud Railway), fallback ke localhost
-LARAVEL_BASE_URL = os.environ.get("LARAVEL_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+_raw_url = os.environ.get("LARAVEL_BASE_URL", "http://127.0.0.1:8000").strip().rstrip("/")
+if _raw_url and not _raw_url.startswith("http://") and not _raw_url.startswith("https://"):
+    LARAVEL_BASE_URL = f"https://{_raw_url}"
+else:
+    LARAVEL_BASE_URL = _raw_url
 
 
 @mcp.tool()
