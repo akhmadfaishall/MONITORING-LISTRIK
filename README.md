@@ -88,8 +88,19 @@ Sistem monitoring energi listrik pintar terintegrasi dengan proteksi keamanan li
 
 ## 🔄 Langkah Cepat untuk Teman / Rekan Tim (Setelah Git Pull)
 
-Jika rekan tim Anda baru saja melakukan `git pull` dari repositori ini, jalankan **4 perintah wajib** berikut di terminal laptop mereka agar sistem siap 100%:
+Jika rekan tim Anda baru saja melakukan `git pull` dari repositori ini, ikuti langkah mudah berikut di laptop mereka:
 
+### 1. Tambahkan Konfigurasi MQTT ke File `.env`
+Buka file `.env` di laptop rekan tim, lalu tambahkan baris berikut di paling bawah (atau salin dari `.env.example`):
+```env
+MQTT_HOST=j3a33332.ala.asia-southeast1.emqxsl.com
+MQTT_PORT=8883
+MQTT_AUTH_USERNAME=kelompok20
+MQTT_AUTH_PASSWORD=isi_password_emqx_disini
+MQTT_USE_TLS=true
+```
+
+### 2. Jalankan Perintah Terminal Berikut:
 ```powershell
 # 1. Pasang dependensi pustaka MQTT dan library PHP terbaru
 composer install
