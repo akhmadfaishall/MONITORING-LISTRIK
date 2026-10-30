@@ -4,6 +4,7 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
+    python-is-python3 \
     zip \
     unzip \
     git \
@@ -20,6 +21,6 @@ COPY . .
 
 # Install paket PHP dan library Python
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
-RUN python3 -m pip install -r requirements.txt --break-system-packages
+RUN pip install -r requirements.txt --break-system-packages
 
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
