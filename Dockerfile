@@ -23,4 +23,4 @@ COPY . .
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 RUN pip install -r requirements.txt --break-system-packages
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+CMD ["sh", "-c", "php artisan mqtt:listen & php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
