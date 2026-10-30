@@ -29,6 +29,10 @@
 
     >
 
+    <!-- FONT AWESOME & JARVIS FONTS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;800&display=swap" rel="stylesheet">
+
 
     <!-- CHART -->
 
@@ -3987,6 +3991,268 @@
             .ai-token-table td:nth-child(4) { display: none; }
         }
 
+        /* =========================================================
+           JARVIS AI AGENT CONSOLE & HARDWARE CONTROL STYLES
+           ========================================================= */
+        .jarvis-section {
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .hardware-card {
+            background: #0f1723;
+            border: 1px solid #1d2a3a;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .hardware-card:hover {
+            border-color: #2f81f7;
+            transform: translateY(-2px);
+        }
+
+        .hardware-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .hardware-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(34, 211, 238, 0.1);
+            color: #22d3ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .hardware-icon.safety-ok {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .hardware-icon.safety-warn {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            animation: pulse-danger 1s infinite alternate;
+        }
+
+        @keyframes pulse-danger {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+
+        .hardware-details h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .hardware-details p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: #748398;
+        }
+
+        .switch-btn {
+            background: #111c2a;
+            border: 1px solid #263548;
+            color: #748398;
+            padding: 9px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .switch-btn:hover {
+            border-color: #22d3ee;
+            color: #fff;
+        }
+
+        .switch-btn.active {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: #22c55e;
+            color: #22c55e;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .switch-btn.danger-active {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* JARVIS HUD WRAPPER */
+        .ai-wrapper {
+            width: 100%;
+            background: #030712;
+            background-image: radial-gradient(circle at 50% 50%, #0a1931 0%, #030712 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            color: #00f0ff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 480px;
+            box-sizing: border-box;
+        }
+
+        #boot-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.95); z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: opacity 0.5s ease;
+            backdrop-filter: blur(8px);
+        }
+        #boot-screen h1 { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em; letter-spacing: 3px; color: #00f0ff; text-align: center; margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+        #boot-screen p { font-size: 0.85em; opacity: 0.8; text-align: center; color: #94a3b8; letter-spacing: 1.5px; }
+
+        .ai-hud-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            letter-spacing: 1.5px;
+        }
+
+        .jarvis-core-container {
+            position: relative;
+            width: 220px; height: 220px;
+            display: flex; justify-content: center; align-items: center;
+            margin: 5px 0 20px 0;
+        }
+
+        .audio-waveform-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 1px dashed rgba(0, 240, 255, 0.2);
+            animation: jarvis-spin 30s linear infinite;
+        }
+
+        .visualizer {
+            position: absolute; width: 210px; height: 210px;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            animation: jarvis-sound-pulse 1.8s ease-in-out infinite alternate;
+        }
+
+        .visualizer::before, .visualizer::after {
+            content: ''; position: absolute; border-radius: 50%;
+            border: 4px double #00f0ff; opacity: 0.4;
+            box-shadow: 0 0 20px #0070f3;
+        }
+
+        .visualizer::before { width: 100%; height: 100%; border-style: dotted; animation: jarvis-spin 10s linear infinite; }
+        .visualizer::after { width: 90%; height: 90%; border-style: dashed; animation: jarvis-spin-reverse 8s linear infinite; }
+
+        .pulse-layer {
+            position: absolute; width: 120%; height: 120%;
+            border: 2px solid rgba(0, 112, 243, 0.4); border-radius: 50%;
+            animation: jarvis-wave-expand 2s infinite ease-out; opacity: 0; pointer-events: none;
+        }
+        .pulse-layer:nth-child(2) { animation-delay: 0.6s; }
+        .pulse-layer:nth-child(3) { animation-delay: 1.2s; }
+
+        .orb-reaktor {
+            width: 90px; height: 90px;
+            background: radial-gradient(circle, #00f0ff 0%, #0070f3 60%, #030712 100%);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.6);
+            font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 2px;
+            font-size: 0.9rem; color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+            z-index: 5; transition: all 0.4s ease;
+        }
+
+        .state-listening .visualizer { animation: jarvis-sound-pulse 0.4s ease-in-out infinite alternate !important; }
+        .state-listening .orb-reaktor {
+            background: radial-gradient(circle, #fff 0%, #10b981 60%, transparent 100%);
+            box-shadow: 0 0 60px #10b981, inset 0 0 20px #fff;
+        }
+        .state-thinking .visualizer { animation: jarvis-sound-pulse 0.25s ease-in-out infinite alternate !important; }
+        .state-thinking .orb-reaktor {
+            background: radial-gradient(circle, #fff 0%, #00f0ff 60%, transparent 100%);
+            box-shadow: 0 0 70px #00f0ff, inset 0 0 20px #fff;
+        }
+
+        @keyframes jarvis-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes jarvis-spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        @keyframes jarvis-wave-expand { 0% { transform: scale(0.9); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
+        @keyframes jarvis-sound-pulse {
+            0% { transform: scale(0.96); filter: brightness(0.9); }
+            100% { transform: scale(1.08); filter: brightness(1.2); box-shadow: 0 0 30px rgba(0, 240, 255, 0.4); }
+        }
+
+        .controls-row { display: flex; gap: 15px; margin-bottom: 20px; z-index: 30; }
+
+        .talk-btn {
+            background: linear-gradient(135deg, rgba(0, 112, 243, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%);
+            border: 2px solid #00f0ff; color: #ffffff;
+            padding: 12px 28px; font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em; letter-spacing: 1.5px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 112, 243, 0.2);
+            border-radius: 50px; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px;
+        }
+        .talk-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 112, 243, 0.4) 0%, rgba(0, 240, 255, 0.3) 100%);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.8); transform: scale(1.02);
+        }
+        .talk-btn.recording {
+            background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444;
+            box-shadow: 0 0 25px #ef4444;
+        }
+
+        .interrupt-btn {
+            background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444;
+            color: #ef4444; padding: 10px 20px; font-family: 'Orbitron', sans-serif;
+            font-size: 0.85em; font-weight: 700; cursor: pointer; display: none; border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .interrupt-btn:hover { background: #ef4444; color: #fff; box-shadow: 0 0 15px #ef4444; }
+
+        .text-output-container {
+            width: 100%; max-width: 900px; height: 120px;
+            background: rgba(7, 15, 30, 0.85); border: 1px solid rgba(0, 112, 243, 0.5);
+            border-top: 3px solid #00f0ff; padding: 14px;
+            border-radius: 12px; display: flex; flex-direction: column;
+            box-shadow: inset 0 0 15px rgba(0, 112, 243, 0.2);
+            box-sizing: border-box;
+        }
+        .status-header { font-size: 0.8em; color: rgba(0, 240, 255, 0.6); margin-bottom: 8px; display: flex; justify-content: space-between; letter-spacing: 1px; }
+        .response-text { flex-grow: 1; overflow-y: auto; font-size: 0.9em; line-height: 1.5; color: #00f0ff; text-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+        #tts-debug { margin-top: 10px; font-size: 0.75em; color: rgba(0, 240, 255, 0.4); letter-spacing: 1.5px; }
+
 </style>
 
 
@@ -4572,6 +4838,142 @@
                 <div class="ai-loading">⟳ Memuat prediksi AI...</div>
             </div>
 
+        </div>
+
+        <!-- ======================================================
+             PANEL KONTROL HARDWARE & SENSOR KEAMANAN (ESP32 #2)
+        ======================================================= -->
+        <div class="jarvis-section">
+            <div class="panel-header" style="margin-bottom:12px">
+                <div>
+                    <div class="panel-title"><i class="fas fa-shield-alt" style="color:var(--cyan); margin-right:6px"></i> Kontrol Perangkat & Sensor Keamanan (ESP32 #2)</div>
+                    <div class="panel-subtitle">Kendali tombol saklar aktuator MQTT serta telemetri sensor gas & suhu ruangan</div>
+                </div>
+            </div>
+
+            <div class="hardware-grid">
+                <!-- SAKLAR LAMPU / RELAY LED -->
+                <div class="hardware-card">
+                    <div class="hardware-info">
+                        <div class="hardware-icon" id="icon-relay_led">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="hardware-details">
+                            <h4>Lampu / Relay LED</h4>
+                            <p id="sub-relay_led">Status: <span id="label-relay_led" style="font-weight:700">OFF</span></p>
+                        </div>
+                    </div>
+                    <button class="switch-btn" id="btn-relay_led" onclick="toggleDevice('relay_led')">
+                        <i class="fas fa-power-off"></i> <span id="btn-text-relay_led">NYALAKAN</span>
+                    </button>
+                </div>
+
+                <!-- SAKLAR ALARM BUZZER -->
+                <div class="hardware-card">
+                    <div class="hardware-info">
+                        <div class="hardware-icon" id="icon-buzzer">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="hardware-details">
+                            <h4>Alarm Buzzer</h4>
+                            <p id="sub-buzzer">Status: <span id="label-buzzer" style="font-weight:700">OFF</span></p>
+                        </div>
+                    </div>
+                    <button class="switch-btn" id="btn-buzzer" onclick="toggleDevice('buzzer')">
+                        <i class="fas fa-power-off"></i> <span id="btn-text-buzzer">BUNYIKAN</span>
+                    </button>
+                </div>
+
+                <!-- SENSOR GAS MQ-2 -->
+                <div class="hardware-card">
+                    <div class="hardware-info">
+                        <div class="hardware-icon safety-ok" id="icon-gas">
+                            <i class="fas fa-smog"></i>
+                        </div>
+                        <div class="hardware-details">
+                            <h4>Sensor Gas MQ-2</h4>
+                            <p><span id="val-gas-ppm" style="font-size:15px; font-weight:700; color:#fff">--</span> ppm &bull; <span id="badge-gas-status" style="font-weight:700; color:var(--green)">AMAN</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SENSOR SUHU & KELEMBABAN DHT22 -->
+                <div class="hardware-card">
+                    <div class="hardware-info">
+                        <div class="hardware-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b">
+                            <i class="fas fa-temperature-high"></i>
+                        </div>
+                        <div class="hardware-details">
+                            <h4>Suhu & Kelembaban</h4>
+                            <p><span id="val-temp" style="font-size:15px; font-weight:700; color:#fff">--</span> °C &bull; <span id="val-hum" style="font-weight:600; color:var(--text-soft)">--% RH</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             JARVIS AI AGENT CONSOLE (VOICE & TEXT ASSISTANT)
+        ======================================================= -->
+        <div class="jarvis-section">
+            <div class="panel-header" style="margin-bottom:12px">
+                <div>
+                    <div class="panel-title"><i class="fas fa-brain" style="color:#00f0ff; margin-right:6px"></i> JARVIS AI Agent Voice Console</div>
+                    <div class="panel-subtitle">Asisten cerdas berbasis n8n & LLM untuk tanya jawab listrik dan kontrol suara</div>
+                </div>
+            </div>
+
+            <div class="ai-wrapper">
+                <div id="boot-screen">
+                    <h1>[SYSTEM STANDBY]</h1>
+                    <p>KLIK DI SINI UNTUK MENGAKTIFKAN ASISTEN AI & VOICE</p>
+                </div>
+
+                <div class="ai-hud-header">
+                    <div>MODE: <span style="color:#00f0ff">PUSH-TO-TALK</span></div>
+                    <div>STATUS: <span id="mic-status" style="color:#00f0ff">READY</span></div>
+                    <div>CLUSTER: <span style="color:#10b981">JARVIS-AI</span></div>
+                </div>
+
+                <!-- REAKTOR SOUND PULSE -->
+                <div class="jarvis-core-container" id="core-visualizer">
+                    <div class="audio-waveform-ring"></div>
+                    <div class="visualizer" id="sound-waves">
+                        <div class="pulse-layer"></div>
+                        <div class="pulse-layer"></div>
+                        <div class="pulse-layer"></div>
+                    </div>
+                    <div class="orb-reaktor" id="core-orb">.JARVIS.</div>
+                </div>
+
+                <div class="controls-row">
+                    <button class="talk-btn" id="talk-btn">
+                        <i class="fas fa-microphone"></i>
+                        <span id="btn-text">TEKAN UNTUK BICARA</span>
+                    </button>
+                    <button class="interrupt-btn" id="interrupt-btn">⏹️ STOP AI</button>
+                </div>
+
+                <!-- ALTERNATIF INPUT TEKS UNTUK PENGUJIAN CEPAT -->
+                <div style="width:100%; max-width:900px; display:flex; gap:8px; margin-bottom:15px; z-index:30;">
+                    <input type="text" id="ai-text-input" placeholder="Atau ketik perintah di sini (misal: 'matikan lampu', 'berapa watt saat ini?')..." 
+                        style="flex:1; background:rgba(7,15,30,0.9); border:1px solid rgba(0,240,255,0.4); border-radius:8px; padding:10px 14px; color:#00f0ff; font-family:'Share Tech Mono',monospace; font-size:13px; outline:none;">
+                    <button id="ai-text-send" style="background:#0070f3; border:1px solid #00f0ff; color:#fff; border-radius:8px; padding:10px 20px; font-weight:700; cursor:pointer; font-family:'Orbitron',sans-serif; font-size:12px;">
+                        KIRIM
+                    </button>
+                </div>
+
+                <div class="text-output-container">
+                    <div class="status-header">
+                        <span id="ai-status">STANDBY</span>
+                        <span>AI RESPONSE CONSOLE</span>
+                    </div>
+                    <div class="response-text" id="ai-response">
+                        Klik layar di atas lalu tekan tombol bicara untuk mengontrol perangkat atau bertanya ke AI...
+                    </div>
+                </div>
+                <div id="tts-debug">[ TTS: STANDBY ]</div>
+            </div>
         </div>
 
     </section>
@@ -6378,6 +6780,369 @@ function changeHistoryWindow(direction) {
     loadPrediction();
     /* Perbarui prediksi setiap 5 menit */
     setInterval(loadPrediction, 5 * 60 * 1000);
+
+    /* =========================================================
+       HARDWARE CONTROL & MONITORING LOGIC (ESP32 #2)
+       ========================================================= */
+    let currentDeviceStates = {
+        relay_led: 'OFF',
+        buzzer: 'OFF'
+    };
+
+    async function toggleDevice(device) {
+        const nextState = currentDeviceStates[device] === 'ON' ? 'OFF' : 'ON';
+        const btn = document.getElementById(`btn-${device}`);
+        if (btn) btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/device/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ device: device, state: nextState })
+            });
+
+            if (res.ok) {
+                currentDeviceStates[device] = nextState;
+                updateDeviceUI(device, nextState);
+            }
+        } catch (e) {
+            console.error('Gagal mengubah status perangkat:', e);
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function updateDeviceUI(device, state) {
+        const isON = (state === 'ON');
+        const label = document.getElementById(`label-${device}`);
+        const btn = document.getElementById(`btn-${device}`);
+        const btnText = document.getElementById(`btn-text-${device}`);
+        const icon = document.getElementById(`icon-${device}`);
+
+        if (label) {
+            label.textContent = state;
+            label.style.color = isON ? 'var(--green)' : '#748398';
+        }
+        if (btnText) {
+            btnText.textContent = isON ? 'MATIKAN' : (device === 'buzzer' ? 'BUNYIKAN' : 'NYALAKAN');
+        }
+        if (btn) {
+            btn.className = isON ? (device === 'buzzer' ? 'switch-btn danger-active' : 'switch-btn active') : 'switch-btn';
+        }
+        if (icon) {
+            icon.style.color = isON ? (device === 'buzzer' ? '#ef4444' : '#22c55e') : '#22d3ee';
+            icon.style.background = isON ? (device === 'buzzer' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)') : 'rgba(34,211,238,0.1)';
+        }
+    }
+
+    async function fetchSystemSafetyAndHardware() {
+        try {
+            const res = await fetch('/api/system/status-summary');
+            if (!res.ok) return;
+            const data = await res.json();
+
+            // 1. Update Hardware Controls
+            if (data.perangkat) {
+                if (data.perangkat.relay_led && data.perangkat.relay_led !== currentDeviceStates.relay_led) {
+                    currentDeviceStates.relay_led = data.perangkat.relay_led;
+                    updateDeviceUI('relay_led', data.perangkat.relay_led);
+                }
+                if (data.perangkat.buzzer && data.perangkat.buzzer !== currentDeviceStates.buzzer) {
+                    currentDeviceStates.buzzer = data.perangkat.buzzer;
+                    updateDeviceUI('buzzer', data.perangkat.buzzer);
+                }
+            }
+
+            // 2. Update Keamanan (Gas & DHT22)
+            if (data.keamanan) {
+                const elGas = document.getElementById('val-gas-ppm');
+                const badgeGas = document.getElementById('badge-gas-status');
+                const iconGas = document.getElementById('icon-gas');
+                const elTemp = document.getElementById('val-temp');
+                const elHum = document.getElementById('val-hum');
+
+                if (elGas) elGas.textContent = data.keamanan.gas_ppm;
+                if (badgeGas) {
+                    badgeGas.textContent = data.keamanan.status;
+                    badgeGas.style.color = data.keamanan.gas_danger ? 'var(--red)' : 'var(--green)';
+                }
+                if (iconGas) {
+                    iconGas.className = data.keamanan.gas_danger ? 'hardware-icon safety-warn' : 'hardware-icon safety-ok';
+                }
+                if (elTemp) elTemp.textContent = data.keamanan.temperature;
+                if (elHum) elHum.textContent = data.keamanan.humidity + '% RH';
+            }
+        } catch (e) {
+            // diamkan jika polling belum respon
+        }
+    }
+
+    setInterval(fetchSystemSafetyAndHardware, 2500);
+    fetchSystemSafetyAndHardware();
+
+    /* =========================================================
+       JARVIS VOICE AI AGENT INTEGRATION (N8N + SPEECH API)
+       ========================================================= */
+    const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/344bba5a-b6bd-4e22-b512-0b74b37d442d";
+
+    const bootScreen = document.getElementById('boot-screen');
+    const aiResponse = document.getElementById('ai-response');
+    const aiStatus = document.getElementById('ai-status');
+    const micStatus = document.getElementById('mic-status');
+    const talkBtn = document.getElementById('talk-btn');
+    const btnText = document.getElementById('btn-text');
+    const interruptBtn = document.getElementById('interrupt-btn');
+    const ttsDebug = document.getElementById('tts-debug');
+    const coreVisualizer = document.getElementById('core-visualizer');
+
+    let isSystemActive = false;
+    let isAiSpeaking = false;
+    let currentState = 'STANDBY';
+
+    function getSessionId() {
+        let sessionId = sessionStorage.getItem('lamban_session_id');
+        if (!sessionId) {
+            sessionId = 'user_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+            sessionStorage.setItem('lamban_session_id', sessionId);
+        }
+        return sessionId;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+
+    if (SpeechRecognition) {
+        try {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.interimResults = false;
+
+            recognition.onresult = async (event) => {
+                const transcript = event.results[0][0].transcript; 
+                sendPromptToN8N(transcript);
+            };
+
+            recognition.onerror = (e) => {
+                console.warn("Speech Rec Error:", e);
+                if (e.error === 'not-allowed') {
+                    if (aiResponse) {
+                        aiResponse.innerHTML = '<span style="color:var(--red)"><b>Izin Mikrofon Belum Diizinkan!</b></span><br><br>' +
+                            '1. Klik ikon <b>Setelan / Gembok 🔒</b> di sebelah kiri URL browser.<br>' +
+                            '2. Ubah <b>Mikrofon</b> menjadi <b>Izinkan (Allow)</b>.<br>' +
+                            '3. Atau Anda bisa langsung mengetik perintah pada kotak teks di bawah.';
+                    }
+                }
+                updateState('STANDBY');
+            };
+        } catch(err) {
+            console.warn("Gagal inisialisasi Speech Recognition:", err);
+        }
+    }
+
+    // Fungsi Pengiriman Perintah ke n8n (Bisa dari Suara maupun Teks)
+    async function sendPromptToN8N(promptText) {
+        if (!promptText || !promptText.trim()) return;
+        updateState('THINKING');
+        aiResponse.innerHTML = '<span style="color:#fff">User:</span> ' + promptText + '<br><br><span style="color:#00f0ff; opacity:0.8;">Mengirim perintah ke n8n agent...</span>';
+
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: promptText,
+                    chatInput: promptText,
+                    session_id: getSessionId()
+                })
+            });
+
+            if (!response.ok) throw new Error("Gagal terhubung ke n8n.");
+
+            const data = await response.json();
+            let aiText = data.reply || data.output || data.response || "Perintah diproses.";
+            const cleanText = aiText.replace(/[*#_`~()><\-]/g, ' ');
+
+            updateState('RESPONDING');
+            aiResponse.innerHTML = '<span style="color:#fff">User:</span> ' + promptText + '<br><br><span style="color:#00f0ff">JARVIS:</span><br>' + cleanText;
+            aiResponse.scrollTop = aiResponse.scrollHeight;
+
+            // Sinkronisasi status saklar setelah perintah diproses
+            fetchSystemSafetyAndHardware();
+            speakText(cleanText);
+
+        } catch (error) {
+            aiResponse.innerHTML += '<br><br><span style="color:var(--red)">Error: ' + error.message + '</span>';
+            updateState('STANDBY');
+        }
+    }
+
+    const synth = window.speechSynthesis;
+    let cachedVoices = [];
+    function loadVoices() { if (synth) cachedVoices = synth.getVoices(); }
+    loadVoices();
+    if (synth && speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function getBestVoice() {
+        if (!synth) return null;
+        const voices = cachedVoices.length ? cachedVoices : synth.getVoices();
+        return voices.find(v => v.lang.includes('id') && (v.name.includes('Online') || v.name.includes('Google') || v.name.includes('Natural'))) 
+               || voices.find(v => v.lang.includes('id')) || voices[0];
+    }
+
+    function speakText(text) {
+        if (!synth) return;
+        isAiSpeaking = true;
+        try {
+            synth.resume(); 
+            synth.cancel(); 
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voice = getBestVoice();
+            if (voice) utterance.voice = voice;
+            utterance.pitch = 1.0;
+            utterance.rate = 0.9;
+
+            utterance.onstart = () => { if(ttsDebug) ttsDebug.innerText = "[ TTS: MEMBACA RESPONS... ]"; };
+            utterance.onend = () => { isAiSpeaking = false; if(ttsDebug) ttsDebug.innerText = "[ TTS: SELESAI ]"; updateState('STANDBY'); };
+            utterance.onerror = () => { isAiSpeaking = false; updateState('STANDBY'); };
+
+            synth.speak(utterance);
+        } catch (e) {
+            isAiSpeaking = false;
+            updateState('STANDBY');
+        }
+    }
+
+    function updateState(state) {
+        currentState = state;
+        if (aiStatus) aiStatus.innerText = state;
+        if (coreVisualizer) coreVisualizer.className = 'jarvis-core-container'; 
+        
+        if (state === 'LISTENING') {
+            if (coreVisualizer) coreVisualizer.classList.add('state-listening');
+            if (micStatus) { micStatus.innerText = "RECORDING"; micStatus.style.color = "var(--green)"; }
+            if (btnText) btnText.innerText = "SEDANG MENDENGARKAN...";
+            if (talkBtn) talkBtn.classList.add('recording');
+            if (interruptBtn) interruptBtn.style.display = "none";
+        } else if (state === 'THINKING') {
+            if (coreVisualizer) coreVisualizer.classList.add('state-thinking');
+            if (micStatus) { micStatus.innerText = "SYNCING"; micStatus.style.color = "#00f0ff"; }
+            if (btnText) btnText.innerText = "MEMPROSES...";
+            if (talkBtn) talkBtn.classList.remove('recording');
+            if (interruptBtn) interruptBtn.style.display = "none";
+        } else if (state === 'RESPONDING') {
+            if (btnText) btnText.innerText = "TEKAN UNTUK BICARA";
+            if (talkBtn) talkBtn.classList.remove('recording');
+            if (interruptBtn) interruptBtn.style.display = "inline-block";
+        } else {
+            if (micStatus) { micStatus.innerText = "READY"; micStatus.style.color = "#00f0ff"; }
+            if (btnText) btnText.innerText = "TEKAN UNTUK BICARA";
+            if (talkBtn) talkBtn.classList.remove('recording');
+            if (interruptBtn) interruptBtn.style.display = "none";
+        }
+    }
+
+    if (bootScreen) {
+        bootScreen.addEventListener('click', () => {
+            bootScreen.style.opacity = '0';
+            setTimeout(() => { bootScreen.style.display = 'none'; }, 500);
+            isSystemActive = true;
+            
+            if (synth) {
+                try {
+                    synth.resume(); 
+                    synth.cancel(); 
+                    const unlockAudio = new SpeechSynthesisUtterance('Jarvis Siap.'); 
+                    const voice = getBestVoice();
+                    if (voice) unlockAudio.voice = voice;
+                    unlockAudio.rate = 0.9;
+                    synth.speak(unlockAudio);
+                } catch(e) {}
+            }
+
+            if (aiResponse) {
+                if (!recognition) {
+                    aiResponse.innerHTML = "<span style='color:var(--red)'>Sistem AI Aktif (Gunakan browser Chrome/Edge untuk input suara).</span>";
+                } else {
+                    aiResponse.innerHTML = "<span style='color:#00f0ff'>Sistem AI Aktif. Silakan tekan tombol bicara...</span>";
+                }
+            }
+            updateState('STANDBY');
+        });
+    }
+
+    if (talkBtn) {
+        talkBtn.addEventListener('click', async () => {
+            if (!isSystemActive || currentState === 'THINKING') return;
+            if (!recognition) {
+                alert("Fitur suara tidak didukung di browser ini. Gunakan Google Chrome atau Microsoft Edge.");
+                return;
+            }
+            if (isAiSpeaking && synth) { synth.cancel(); isAiSpeaking = false; }
+
+            if (currentState === 'LISTENING') {
+                try { recognition.stop(); } catch(e) {}
+                updateState('STANDBY');
+                return;
+            }
+
+            try {
+                // 1. Minta izin mikrofon secara eksplisit ke browser
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // Matikan track dummy setelah izin diperoleh
+                    stream.getTracks().forEach(track => track.stop());
+                }
+
+                // 2. Mulai pengenalan suara
+                recognition.start();
+                updateState('LISTENING');
+            } catch(e) {
+                console.warn("Recognition start error:", e);
+                if (e.name === 'NotAllowedError' || e.error === 'not-allowed') {
+                    if (aiResponse) {
+                        aiResponse.innerHTML = '<span style="color:var(--red)"><b>Izin Mikrofon Ditolak oleh Browser/Windows!</b></span><br><br>' +
+                            'Silakan gunakan kolom teks di bawah untuk mengetik perintah ke Jarvis.';
+                    }
+                }
+                updateState('STANDBY');
+            }
+        });
+    }
+
+    // Penanganan Input Teks Alternatif
+    const textInputEl = document.getElementById('ai-text-input');
+    const textSendBtn = document.getElementById('ai-text-send');
+
+    if (textSendBtn && textInputEl) {
+        const handleSend = () => {
+            const val = textInputEl.value.trim();
+            if (!val) return;
+            textInputEl.value = '';
+            sendPromptToN8N(val);
+        };
+
+        textSendBtn.addEventListener('click', handleSend);
+        textInputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    }
+
+    if (interruptBtn) {
+        interruptBtn.addEventListener('click', () => {
+            if (isAiSpeaking && synth) {
+                synth.cancel();
+                isAiSpeaking = false;
+                if (ttsDebug) ttsDebug.innerText = "[ TTS: DIHENTIKAN ]";
+                updateState('STANDBY');
+            }
+        });
+    }
 
 </script>
 

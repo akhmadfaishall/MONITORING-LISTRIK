@@ -1,58 +1,230 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚡ Sistem Monitoring Listrik Rumah, Keamanan IoT & Asisten Suara JARVIS AI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem monitoring energi listrik pintar terintegrasi dengan proteksi keamanan lingkungan ruangan, prediksi kecukupan token PLN berbasis Machine Learning, serta asisten suara interaktif (**JARVIS**) yang ditenagai oleh **n8n AI Agent**, **LLM (Google Gemini)**, dan protokol resmi **MCP (Model Context Protocol)** di Python.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🏛️ Arsitektur Sistem
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        LAPISAN PENGGUNA & AI                          │
+├───────────────────────────────────┬────────────────────────────────────┤
+│   JARVIS AI Voice & Chat Console  │   Dashboard Web Monitoring Laravel │
+│   (Web Speech STT / TTS Browser)  │   (Grafik Realtime, Token & Switch)│
+└─────────────────┬─────────────────┴──────────────────┬─────────────────┘
+                  │                                    │
+                  ▼                                    ▼
+       [ n8n AI Orchestrator ]              [ Backend Laravel 13 API ]
+       (Google Gemini + Memory)             (Database MySQL + Predictions)
+                  │                                    │
+                  ▼                                    │
+     [ Python MCP Server (FastMCP) ]                   │
+     (Port 8001 / SSE Transport)                       │
+                  │                                    │
+                  └─────────────────┬──────────────────┘
+                                    │
+                                    ▼
+       ┌────────────────────────────────────────────────────────┐
+       │             EMQX CLOUD MQTT BROKER (TLS 8883)          │
+       │                 Prefix Topic: kelompok20/#             │
+       └────────────────────────────┬───────────────────────────┘
+                                    │
+                  ┌─────────────────┴─────────────────┐
+                  ▼                                   ▼
+          [ ESP32 #1 (Energi) ]               [ ESP32 #2 (Keamanan) ]
+       - Sensor PZEM-004T v3.0             - Sensor Gas MQ-2
+       - Volt, Ampere, Watt, kWh           - Sensor Suhu/Hum DHT22
+                                           - Lampu / Relay LED
+                                           - Alarm Buzzer (Safety Lokal)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🚀 Fitur Unggulan
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Dual-ESP32 Architecture:**
+   - **ESP32 #1 (Listrik):** Membaca tegangan, arus, daya aktif, energi kumulatif kWh, dan power factor secara non-blocking.
+   - **ESP32 #2 (Keamanan & Kontrol):** Memantau kebocoran gas LPG/asap (MQ-2) dan suhu ruangan (DHT22). Memiliki fitur **Local Safety Offline**: buzzer berbunyi otomatis saat gas bocor tanpa memerlukan internet.
+2. **Kendali Ganda (Dual-Interface Control):**
+   - Mengontrol saklar lampu/relay dan alarm buzzer melalui tombol interaktif di web dashboard.
+   - Atau mengontrol secara alami lewat perintah suara ke Jarvis (*"Jarvis, matikan lampu"*).
+3. **Prediksi Token Listrik Machine Learning:**
+   - Model time-series (`ml/model_listrik.pkl` & `ml/predict.py`) untuk memprediksi ketahanan token PLN berbagai nominal (Rp 20.000 - Rp 1.000.000) dan estimasi tanggal alarm meteran berbunyi.
+4. **Asisten AI Suara (JARVIS Console):**
+   - Web Speech Recognition (Bahasa Indonesia `id-ID`) & Web Speech Synthesis.
+   - Visualizer reaktor suara berputar dengan status dinamis (*Listening*, *Thinking*, *Responding*).
+   - Dilengkapi fallback input chat teks cepat.
+5. **Model Context Protocol (MCP) Server Python:**
+   - Menyediakan tool telemetri, kendali aktuator MQTT, dan kalkulasi prediksi token untuk dikonsumsi n8n.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📡 Daftar Topic MQTT (EMQX Cloud)
 
-## Security Vulnerabilities
+- **Broker Address:** `j3a33332.ala.asia-southeast1.emqxsl.com`
+- **Port:** `8883` (TLS/SSL)
+- **Kredensial:** Username `kelompok20` / Password akun EMQX Anda.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| No | Topic | Arah Aliran | Fungsi |
+|---|---|---|---|
+| 1 | `kelompok20/pzem/data` | ESP32 #1 ➔ Broker ➔ Laravel | Telemetri Volt, Watt, Ampere, kWh |
+| 2 | `kelompok20/safety/data` | ESP32 #2 ➔ Broker ➔ Laravel | Telemetri Gas (ppm), Suhu (°C), Hum (%) |
+| 3 | `kelompok20/control/command` | Web / Jarvis ➔ Broker ➔ ESP32 #2 | Perintah saklar: `{"target":"relay_led","action":"ON"}` |
+| 4 | `kelompok20/control/status` | ESP32 #2 ➔ Broker ➔ Laravel | Konfirmasi status feedback aktuator |
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🛠️ Persyaratan Sistem (Prerequisites)
+
+- **PHP** >= 8.3 & **Composer**
+- **Node.js** >= 18 & **NPM**
+- **Python** 3.10+ (dengan `fastmcp`, `requests`, `joblib`, `pandas`)
+- **MySQL / MariaDB** (Laragon / XAMPP)
+- **Docker Desktop** (untuk menjalankan n8n) atau `npx n8n`
+- **Arduino IDE** (untuk upload firmware ESP32)
+
+---
+
+## 🔄 Langkah Cepat untuk Teman / Rekan Tim (Setelah Git Pull)
+
+Jika rekan tim Anda baru saja melakukan `git pull` dari repositori ini, jalankan **4 perintah wajib** berikut di terminal laptop mereka agar sistem siap 100%:
+
+```powershell
+# 1. Pasang dependensi pustaka MQTT dan library PHP terbaru
+composer install
+
+# 2. Perbarui database lokal (membuat tabel safety_logs & device_states)
+php artisan migrate
+
+# 3. Jalankan server web dashboard Laravel
+php artisan serve --host=0.0.0.0 --port=8000
+
+# 4. Jalankan listener MQTT di terminal terpisah (agar data dari ESP32 PZEM tertangkap)
+php artisan mqtt:listen
+```
+
+> **Catatan untuk Rekan Tim:**  
+> Begitu 4 langkah di atas dijalankan dan ESP32 #1 dihubungkan ke listrik, buka browser di `http://localhost:8000`. Card Tegangan, Arus, Daya Watt, dan Grafik Real-time akan **langsung otomatis menampilkan data asli dari sensor PZEM**.
+
+---
+
+## 💻 Panduan Menjalankan Seluruh Sistem (Lengkap)
+
+Jalankan layanan-layanan berikut di terminal terpisah:
+
+### 1. Database & Server Web Laravel (Terminal 1)
+Pastikan MySQL (di Laragon/XAMPP) sudah aktif, lalu jalankan:
+```powershell
+# Migrasi database jika belum
+php artisan migrate
+
+# Jalankan web server Laravel
+php artisan serve --host=0.0.0.0 --port=8000
+```
+> Web Dashboard dapat diakses di: **`http://localhost:8000`** atau **`http://127.0.0.1:8000`**.
+
+---
+
+### 2. MQTT Background Listener Laravel (Terminal 2)
+Mendengarkan data sensor dari kedua ESP32 dan menyimpannya otomatis ke database:
+```powershell
+php artisan mqtt:listen
+```
+
+---
+
+### 3. Server MCP Python (Terminal 3)
+Menjalankan server protokol MCP untuk melayani n8n AI Agent:
+```powershell
+python ml/mcp_server.py --sse
+```
+> Server MCP akan standby di: **`http://127.0.0.1:8001/sse`**
+
+---
+
+### 4. Workflow n8n AI Agent (Terminal 4 / Docker)
+Pastikan n8n berjalan (misal via Docker):
+```powershell
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+```
+Di dalam n8n:
+1. Hubungkan node **MCP Client** (mode SSE) ke URL:
+   `http://host.docker.internal:8001/sse`
+2. Pastikan node **Webhook** URL-nya cocok dengan `N8N_WEBHOOK_URL` di `dashboard.blade.php`.
+3. Aktifkan workflow (**Active / Publish**).
+
+---
+
+### 5. Flash Firmware ESP32 (Arduino IDE)
+
+#### A. ESP32 #1 (Listrik PZEM):
+1. Buka file: `firmware/esp32_1_pzem/esp32_1_pzem.ino`.
+2. Sesuaikan nama Wi-Fi dan Password:
+   ```cpp
+   const char* ssid     = "NAMA_WIFI";
+   const char* password = "PASSWORD_WIFI";
+   const char* mqtt_user = "kelompok20";
+   const char* mqtt_pass = "PASSWORD_EMQX";
+   ```
+3. Pasang pin PZEM: `TX` ke GPIO 16, `RX` ke GPIO 17.
+4. Upload program ke board ESP32 #1.
+
+#### B. ESP32 #2 (Keamanan MQ-2 & Kontrol):
+1. Buka file: `firmware/esp32_2_safety_control/esp32_2_safety_control.ino`.
+2. Sesuaikan nama Wi-Fi dan Password (bisa Wi-Fi yang berbeda dengan ESP32 #1).
+3. Pasang sensor:
+   - MQ-2 `A0` ➔ GPIO 34
+   - DHT22 `Data` ➔ GPIO 4
+   - Relay / LED ➔ GPIO 2
+   - Buzzer ➔ GPIO 18
+4. Upload program ke board ESP32 #2.
+
+---
+
+## 🎤 Contoh Perintah Suara / Chat ke JARVIS AI
+
+Di Dashboard web, klik layar `[SYSTEM STANDBY]`, lalu tekan tombol bicara atau ketik di kolom teks:
+
+- *"Jarvis, berapa konsumsi daya listrik rumah saya saat ini?"*  
+  *(AI memanggil tool MCP untuk mengambil data Volt, Ampere, Watt).*
+- *"Bagaimana kondisi keamanan ruangan, apakah ada kebocoran gas?"*  
+  *(AI memeriksa kadar gas MQ-2 dan suhu ruangan).*
+- *"Tolong nyalakan lampu relay."*  
+  *(AI memanggil kontrol aktuator ➔ sinyal terkirim ke MQTT ➔ Relay LED menyala seketika).*
+- *"Berapa lama token listrik 50 ribu bisa bertahan?"*  
+  *(AI mengeksekusi model Machine Learning untuk menghitung ketahanan token).*
+
+---
+
+## 📂 Struktur Direktori Proyek
+
+```text
+├── app/
+│   ├── Console/Commands/
+│   │   └── MqttSubscribe.php      # Worker Artisan penangkap topic MQTT
+│   ├── Http/Controllers/Api/
+│   │   ├── SystemApiController.php# Endpoint status ringkasan & kontrol
+│   │   └── PredictionController.php
+│   ├── Models/
+│   │   ├── SensorLog.php          # Data PZEM
+│   │   ├── SafetyLog.php          # Data MQ-2 & DHT22
+│   │   └── DeviceState.php        # Status Relay & Buzzer
+│   └── Services/
+│       └── MqttService.php        # Helper publikasi MQTT aman TLS
+├── database/migrations/           # Skema tabel database MySQL
+├── firmware/
+│   ├── esp32_1_pzem/              # Source code Arduino IDE ESP32 #1
+│   └── esp32_2_safety_control/    # Source code Arduino IDE ESP32 #2
+├── ml/
+│   ├── mcp_server.py              # Server FastMCP Python (Port 8001 SSE)
+│   ├── model_listrik.pkl          # Model ML Prediksi
+│   └── predict.py                 # Skrip kalkulasi simulasi token
+├── resources/views/
+│   └── dashboard.blade.php        # UI Dashboard Web & JARVIS HUD
+└── routes/
+    └── api.php                    # Rute API RESTful
+```
+
+---
+**Pengembang:** Tim Proyek Teknologi Informasi (PTI) dan Tim Internet Of Things (IOT) © 2026

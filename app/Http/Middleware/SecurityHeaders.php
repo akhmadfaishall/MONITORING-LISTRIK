@@ -24,8 +24,8 @@ class SecurityHeaders
         // Batasi informasi Referer yang dikirim ke situs lain
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Batasi penggunaan fitur browser sensitif
-        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        // Batasi penggunaan fitur browser sensitif (Izinkan mikrofon untuk Jarvis)
+        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(self), camera=()');
 
         // Hapus header bawaan Laravel yang memberi tahu situs dibuat dengan PHP/Laravel
         $response->headers->remove('X-Powered-By');
