@@ -136,7 +136,7 @@ if __name__ == "__main__":
     # Jalankan server MCP
     # Jika dijalankan dengan flag --sse, akan membuka server HTTP SSE
     if "--sse" in sys.argv:
-        port = int(os.environ.get("PORT", 8001))
+        port = int(os.environ.get("MCP_PORT", 8001))
         host = os.environ.get("HOST", "0.0.0.0")
         print(f"[JARVIS MCP] Menjalankan server SSE di http://{host}:{port}/sse ...", file=sys.stderr)
         mcp.run(transport="sse", host=host, port=port)
